@@ -1,0 +1,129 @@
+//! The Mixcloud back-end.
+//!
+//! It uses the Mixcloud API to retrieve the feed (user) and items (cloudcasts)).
+//! See also: <https://www.mixcloud.com/developers/>
+
+use chrono::{DateTime, Utc};
+use reqwest::Url;
+use rocket::serde::Deserialize;
+
+/// A Mixcloud user.
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub(crate) struct User {
+    /// The name of the user.
+    pub(crate) name: String,
+
+    /// The bio (description) of the user.
+    pub(crate) biog: String,
+
+    /// The picture URLs associated with the user.
+    pub(crate) pictures: Pictures,
+
+    /// The original URL of the user.
+    pub(crate) url: String,
+}
+
+/// A collection of different sizes/variants of a picture.
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub(crate) struct Pictures {
+    /// The large picture of the user.
+    pub(crate) large: String,
+}
+
+/// The Mixcloud cloudcasts container.
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub(crate) struct CloudcastData {
+    /// The contained cloudcasts.
+    data: Vec<Cloudcast>,
+}
+
+/// A Mixcloud cloudcast.
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub(crate) struct Cloudcast {
+    /// The name of the cloudcast.
+    pub(crate) name: String,
+
+    /// The slug of the cloudcast (used for the enclosure).
+    pub(crate) slug: String,
+
+    /// The picture URLs associated with the cloudcast.
+    pub(crate) pictures: Pictures,
+
+    /// The tags of the cloudcast.
+    pub(crate) tags: Vec<Tag>,
+
+    /// The time the feed was created/started.
+    pub(crate) updated_time: DateTime<Utc>,
+
+    /// The original URL of the cloudcast.
+    pub(crate) url: String,
+
+    /// The length of the cloudcast (in seconds).
+    pub(crate) audio_length: u32,
+}
+
+/// A Mixcloud cloudcast tag.
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub(crate) struct Tag {
+    /// The name of the tag.
+    pub(crate) name: String,
+
+    /// The URL of the tag.
+    pub(crate) url: String,
+}
+
+/// The base URL for the Mixcloud API.
+const API_BASE_URL: &str = "https://api.mixcloud.com";
+
+/// The default bitrate used by
+const DEFAULT_BITRATE: u32 = 64 * 1024;
+
+/// The default file (MIME) type.
+const DEFAULT_FILE_TYPE: &str = "audio/mpeg";
+
+/// Returns the default file type used by Mixcloud.
+pub(crate) fn default_file_type() -> &'static str {
+    DEFAULT_FILE_TYPE
+}
+
+/// Returns the estimated file size in bytes for a given duration.
+///
+/// This uses the default bitrate (see [`DEFAULT_BITRATE`]) which is in B/s.
+pub(crate) fn estimated_file_size(duration: u32) -> u32 {
+    DEFAULT_BITRATE * duration / 8
+}
+
+/// Retrieves the user data using the Mixcloud API.
+pub(crate) async fn get_user(username: &str) -> Option<User> {
+    let mut url = Url::parse(API_BASE_URL).unwrap();
+    url.set_path(username);
+
+    println!("⏬ Retrieving user {username} from {url}...");
+    let response = reqwest::get(url).await.ok()?;
+    let user = match response.error_for_status() {
+        Ok(res) => res.json().await.ok()?,
+        Err(_err) => return None,
+    };
+
+    Some(user)
+}
+
+/// Retrieves the cloudcasts of the user using the Mixcloud API.
+pub(crate) async fn get_cloudcasts(username: &str) -> Option<Vec<Cloudcast>> {
+    let mut url = Url::parse(API_BASE_URL).unwrap();
+    url.set_path(&format!("{username}/cloudcasts/"));
+
+    println!("⏬ Retrieving cloudcasts of user {username} from {url}...");
+    let response = reqwest::get(url).await.ok()?;
+    let cloudcasts: CloudcastData = match response.error_for_status() {
+        Ok(res) => res.json().await.ok()?,
+        Err(_err) => return None,
+    };
+
+    Some(cloudcasts.data)
+}
