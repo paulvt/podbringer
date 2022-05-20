@@ -11,8 +11,10 @@ use std::process::Stdio;
 
 use chrono::{DateTime, NaiveDateTime, Utc};
 use reqwest::Url;
+use rocket::fairing::AdHoc;
 use rocket::response::stream::ReaderStream;
-use rocket::{get, routes, Build, Responder, Rocket};
+use rocket::serde::{Deserialize, Serialize};
+use rocket::{get, routes, Build, Responder, Rocket, State};
 use rss::extension::itunes::ITunesItemExtensionBuilder;
 use rss::{
     CategoryBuilder, ChannelBuilder, EnclosureBuilder, GuidBuilder, ImageBuilder, ItemBuilder,
@@ -21,6 +23,14 @@ use tokio::process::{ChildStdout, Command};
 
 pub(crate) mod mixcloud;
 
+/// The extra application specific configuration.
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+pub(crate) struct Config {
+    #[serde(default)]
+    url: String,
+}
+
 /// A Rocket responder wrapper type for RSS feeds.
 #[derive(Responder)]
 #[response(content_type = "application/xml")]
@@ -28,7 +38,7 @@ struct RssFeed(String);
 
 /// Handler for retrieving the RSS feed of an Mixcloud user.
 #[get("/<username>")]
-async fn feed(username: &str) -> Option<RssFeed> {
+async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
     let user = mixcloud::get_user(username).await?;
     let cloudcasts = mixcloud::get_cloudcasts(username).await?;
     let mut last_build = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
@@ -42,7 +52,8 @@ async fn feed(username: &str) -> Option<RssFeed> {
         .into_iter()
         .map(|cloudcast| {
             let slug = cloudcast.slug;
-            let mut url = Url::parse("http://localhost:8000/download").unwrap();
+            let mut url = Url::parse(&config.url).unwrap();
+            url.set_path(&format!("{}/download", &url.path()[1..]));
             url.query_pairs_mut().append_pair("url", &cloudcast.url);
             let description = format!("Taken from Mixcloud: <{}>", cloudcast.url);
             let keywords = cloudcast
@@ -142,4 +153,5 @@ pub fn setup() -> Rocket<Build> {
     rocket::build()
         .mount("/mixcloud", routes![feed])
         .mount("/download", routes![download])
+        .attach(AdHoc::config::<Config>())
 }
