@@ -16,3 +16,28 @@ rocket = { version = "0.5.0-rc.2", features = ["json"] }
 rss = "2.0.1"
 tempfile = "3"
 tokio = { version = "1.6.1", features = ["process"] }
+
+[package.metadata.deb]
+maintainer = "Paul van Tilburg <paul@luon.net>"
+copyright = "2022, Paul van Tilburg"
+depends = "$auto, systemd"
+extended-description = """\
+Podbringer is a web service that provides podcasts for services that don't
+offer them (anymore). It provides a way to get the RSS feed for your podcast
+client and it facilites the downloads of the pods (enclosures).
+ 
+It currently only supports [Mixcloud](https://mixcloud.com).
+Other back-ends might be added in the future.
+"""
+section = "net"
+priority = "optional"
+assets = [
+  ["README.md", "usr/share/doc/podbringer/", "664"],
+  ["Rocket.toml.example", "/etc/podbringer.toml", "644"],
+  ["target/release/podbringer", "usr/sbin/podbringer", "755"]
+]
+conf-files = [
+  "/etc/podbringer.toml"
+]
+maintainer-scripts = "debian/"
+systemd-units = { unit-name = "podbringer" }
