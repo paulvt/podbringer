@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Paul van Tilburg <paul@luon.net>"]
 edition = "2021"
 description = "Web services to provide an podcast (RSS) interface for Mixcloud"
-#readme = "README.md"
+readme = "README.md"
 license = "MIT"
 
 [dependencies]
