@@ -3,9 +3,12 @@
 //! It uses the Mixcloud API to retrieve the feed (user) and items (cloudcasts)).
 //! See also: <https://www.mixcloud.com/developers/>
 
+use std::process::Stdio;
+
 use chrono::{DateTime, Utc};
 use reqwest::Url;
 use rocket::serde::Deserialize;
+use tokio::process::Command;
 
 /// A Mixcloud user.
 #[derive(Debug, Deserialize)]
@@ -44,6 +47,9 @@ pub(crate) struct CloudcastData {
 #[derive(Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct Cloudcast {
+    /// The key of the cloudcast.
+    pub(crate) key: String,
+
     /// The name of the cloudcast.
     pub(crate) name: String,
 
@@ -79,6 +85,9 @@ pub(crate) struct Tag {
 
 /// The base URL for the Mixcloud API.
 const API_BASE_URL: &str = "https://api.mixcloud.com";
+
+/// The base URL for downloading Mixcloud files.
+const FILES_BASE_URL: &str = "https://www.mixcloud.com";
 
 /// The default bitrate used by
 const DEFAULT_BITRATE: u32 = 64 * 1024;
@@ -126,4 +135,25 @@ pub(crate) async fn get_cloudcasts(username: &str) -> Option<Vec<Cloudcast>> {
     };
 
     Some(cloudcasts.data)
+}
+
+/// Retrieves the redirect URL for the provided Mixcloud cloudcast key.
+pub(crate) async fn redirect_url(key: &str) -> Option<String> {
+    let mut cmd = Command::new("youtube-dl");
+    cmd.args(&["--format", "http"])
+        .arg("--get-url")
+        .arg(&format!("{FILES_BASE_URL}{key}"))
+        .stdout(Stdio::piped());
+
+    let output = cmd.output().await.ok()?;
+    if output.status.success() {
+        let direct_url = String::from_utf8_lossy(&output.stdout)
+            .trim_end()
+            .to_owned();
+        println!("🌍 Determined direct URL for {key}: {direct_url}...");
+
+        Some(direct_url)
+    } else {
+        None
+    }
 }

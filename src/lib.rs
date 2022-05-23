@@ -7,19 +7,16 @@
 )]
 #![deny(missing_docs)]
 
-use std::process::Stdio;
-
 use chrono::{DateTime, NaiveDateTime, Utc};
 use reqwest::Url;
 use rocket::fairing::AdHoc;
-use rocket::response::stream::ReaderStream;
+use rocket::response::Redirect;
 use rocket::serde::{Deserialize, Serialize};
 use rocket::{get, routes, Build, Responder, Rocket, State};
 use rss::extension::itunes::ITunesItemExtensionBuilder;
 use rss::{
     CategoryBuilder, ChannelBuilder, EnclosureBuilder, GuidBuilder, ImageBuilder, ItemBuilder,
 };
-use tokio::process::{ChildStdout, Command};
 
 pub(crate) mod mixcloud;
 
@@ -127,27 +124,12 @@ async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
 }
 
 /// Retrieves a download using youtube-dl.
-#[get("/?<backend>&<url>")]
-pub(crate) async fn download(backend: &str, url: &str) -> Option<ReaderStream![ChildStdout]> {
-    let parsed_url = Url::parse(url).ok()?;
-    let mut cmd = Command::new("youtube-dl");
-    cmd.args(&["--output", "-"])
-        .arg(parsed_url.as_str())
-        .stdout(Stdio::piped());
-
-    println!("▶️  Streaming enclosure from {parsed_url} using youtube-dl...");
-    let mut child = cmd.spawn().ok()?;
-    let stdout = child.stdout.take()?;
-
-    tokio::spawn(async move {
-        let status = child
-            .wait()
-            .await
-            .expect("child process encounterd an error");
-        println!("✅ youtube-dl finished with {}", status);
-    });
-
-    Some(ReaderStream::one(stdout))
+#[get("/?<backend>&<id>")]
+pub(crate) async fn download(backend: &str, id: &str) -> Option<Redirect> {
+    match backend {
+        "mixcloud" => mixcloud::redirect_url(id).await.map(Redirect::to),
+        _ => None,
+    }
 }
 
 /// Sets up Rocket.
