@@ -56,7 +56,7 @@ async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
             url.set_path(&format!("{}/download", &url.path()[1..]));
             url.query_pairs_mut().append_pair("backend", "mixcloud");
             url.query_pairs_mut().append_pair("id", &cloudcast.key);
-            let description = format!("Taken from Mixcloud: <{}>", cloudcast.url);
+            let description = format!("Taken from Mixcloud: {}", cloudcast.url);
             let keywords = cloudcast
                 .tags
                 .iter()
