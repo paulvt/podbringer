@@ -54,7 +54,8 @@ async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
             let slug = cloudcast.slug;
             let mut url = Url::parse(&config.url).unwrap();
             url.set_path(&format!("{}/download", &url.path()[1..]));
-            url.query_pairs_mut().append_pair("url", &cloudcast.url);
+            url.query_pairs_mut().append_pair("backend", "mixcloud");
+            url.query_pairs_mut().append_pair("id", &cloudcast.key);
             let description = format!("Taken from Mixcloud: <{}>", cloudcast.url);
             let keywords = cloudcast
                 .tags
@@ -126,8 +127,8 @@ async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
 }
 
 /// Retrieves a download using youtube-dl.
-#[get("/?<url>")]
-pub(crate) async fn download(url: &str) -> Option<ReaderStream![ChildStdout]> {
+#[get("/?<backend>&<url>")]
+pub(crate) async fn download(backend: &str, url: &str) -> Option<ReaderStream![ChildStdout]> {
     let parsed_url = Url::parse(url).ok()?;
     let mut cmd = Command::new("youtube-dl");
     cmd.args(&["--output", "-"])
@@ -148,6 +149,7 @@ pub(crate) async fn download(url: &str) -> Option<ReaderStream![ChildStdout]> {
 
     Some(ReaderStream::one(stdout))
 }
+
 /// Sets up Rocket.
 pub fn setup() -> Rocket<Build> {
     rocket::build()
