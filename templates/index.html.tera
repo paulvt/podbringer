@@ -1,0 +1,19 @@
+<h1>Welcome to Podbringer</h1>
+<p>
+  Podbringer currently has no front-end or web interface yet that can help you
+  use it. Until then, you just have to enter the right service-specific RSS feed
+  URL in your favorite podcast client to start using it.
+</p>
+<p>
+  Given the Mixcloud URL <https://www.mixcloud.com/myfavouriteband/>, the URL you
+  need to use for Podbringer is comprised of the following parts:
+
+  <pre>
+    https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband
+    |------------------------------|     |-------||--------------|
+     The Podbringer location URL          Service  User @ service
+  </pre>
+</p>
+<p>
+  The Podbringer location URL of this instance is: {{ url }}
+</p>

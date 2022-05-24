@@ -15,6 +15,7 @@ use rocket::http::uri::Absolute;
 use rocket::response::Redirect;
 use rocket::serde::{Deserialize, Serialize};
 use rocket::{get, routes, uri, Build, Responder, Rocket, State};
+use rocket_dyn_templates::{context, Template};
 use rss::extension::itunes::{
     ITunesCategoryBuilder, ITunesChannelExtensionBuilder, ITunesItemExtensionBuilder,
 };
@@ -158,9 +159,16 @@ async fn feed(backend: &str, username: &str, config: &State<Config>) -> Option<R
     Some(feed)
 }
 
+/// Returns a simple index page that explains the usage.
+#[get("/")]
+pub(crate) async fn index(config: &State<Config>) -> Template {
+    Template::render("index", context! { url: &config.url })
+}
+
 /// Sets up Rocket.
 pub fn setup() -> Rocket<Build> {
     rocket::build()
-        .mount("/", routes![download, feed])
+        .mount("/", routes![download, feed, index])
         .attach(AdHoc::config::<Config>())
+        .attach(Template::fairing())
 }
