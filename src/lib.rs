@@ -7,12 +7,14 @@
 )]
 #![deny(missing_docs)]
 
+use std::path::PathBuf;
+
 use chrono::{DateTime, NaiveDateTime, Utc};
-use reqwest::Url;
 use rocket::fairing::AdHoc;
+use rocket::http::uri::Absolute;
 use rocket::response::Redirect;
 use rocket::serde::{Deserialize, Serialize};
-use rocket::{get, routes, Build, Responder, Rocket, State};
+use rocket::{get, routes, uri, Build, Responder, Rocket, State};
 use rss::extension::itunes::ITunesItemExtensionBuilder;
 use rss::{
     CategoryBuilder, ChannelBuilder, EnclosureBuilder, GuidBuilder, ImageBuilder, ItemBuilder,
@@ -24,6 +26,7 @@ pub(crate) mod mixcloud;
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct Config {
+    /// The URL at which the application is hosted or proxied from.
     #[serde(default)]
     url: String,
 }
@@ -33,9 +36,22 @@ pub(crate) struct Config {
 #[response(content_type = "application/xml")]
 struct RssFeed(String);
 
+/// Retrieves a download using youtube-dl and redirection.
+#[get("/download/<backend>/<file..>")]
+pub(crate) async fn download(file: PathBuf, backend: &str) -> Option<Redirect> {
+    match backend {
+        "mixcloud" => {
+            let key = format!("/{}/", file.with_extension("").to_string_lossy());
+
+            mixcloud::redirect_url(&key).await.map(Redirect::to)
+        }
+        _ => None,
+    }
+}
+
 /// Handler for retrieving the RSS feed of an Mixcloud user.
-#[get("/<username>")]
-async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
+#[get("/feed/<backend>/<username>")]
+async fn feed(backend: &str, username: &str, config: &State<Config>) -> Option<RssFeed> {
     let user = mixcloud::get_user(username).await?;
     let cloudcasts = mixcloud::get_cloudcasts(username).await?;
     let mut last_build = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
@@ -49,10 +65,12 @@ async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
         .into_iter()
         .map(|cloudcast| {
             let slug = cloudcast.slug;
-            let mut url = Url::parse(&config.url).unwrap();
-            url.set_path(&format!("{}/download", &url.path()[1..]));
-            url.query_pairs_mut().append_pair("backend", "mixcloud");
-            url.query_pairs_mut().append_pair("id", &cloudcast.key);
+            let mut file = PathBuf::from(cloudcast.key.trim_end_matches('/'));
+            file.set_extension("m4a"); // FIXME: Don't hardcode the extension!
+            let url = uri!(
+                Absolute::parse(&config.url).expect("valid URL"),
+                download(backend = backend, file = file)
+            );
             let description = format!("Taken from Mixcloud: {}", cloudcast.url);
             let keywords = cloudcast
                 .tags
@@ -72,12 +90,10 @@ async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
                 })
                 .collect::<Vec<_>>();
 
+            let length = mixcloud::estimated_file_size(cloudcast.audio_length);
             let enclosure = EnclosureBuilder::default()
-                .url(url)
-                .length(format!(
-                    "{}",
-                    mixcloud::estimated_file_size(cloudcast.audio_length)
-                ))
+                .url(url.to_string())
+                .length(format!("{}", length))
                 .mime_type(String::from(mixcloud::default_file_type()))
                 .build();
             let guid = GuidBuilder::default().value(slug).permalink(false).build();
@@ -123,19 +139,9 @@ async fn feed(username: &str, config: &State<Config>) -> Option<RssFeed> {
     Some(feed)
 }
 
-/// Retrieves a download using youtube-dl.
-#[get("/?<backend>&<id>")]
-pub(crate) async fn download(backend: &str, id: &str) -> Option<Redirect> {
-    match backend {
-        "mixcloud" => mixcloud::redirect_url(id).await.map(Redirect::to),
-        _ => None,
-    }
-}
-
 /// Sets up Rocket.
 pub fn setup() -> Rocket<Build> {
     rocket::build()
-        .mount("/mixcloud", routes![feed])
-        .mount("/download", routes![download])
+        .mount("/", routes![download, feed])
         .attach(AdHoc::config::<Config>())
 }
