@@ -24,9 +24,10 @@ builds when you don't add `--release`.)
 
 ### Configuration
 
-For now, you will need to provide Rocket with configuration to tell it with which URL Podbringer is
-reachable. Even if you are not using a reverse proxy, in which case you need to provide it with the
-proxied URL. You can also use the configuration to configure a different address and/or port.
+For now, you will need to provide Rocket with configuration to tell it at which
+URL Podbringer is hosted. This needs to be done even if you are not using a
+reverse proxy, in which case you need to provide it with the proxied URL. You
+can also use the configuration to configure a different address and/or port.
 Just create a `Rocket.toml` file that contains (or copy `Rocket.toml.example`):
 
 ```toml
@@ -38,6 +39,20 @@ url = "https://my.domain.tld/podbringer"
 
 This will work independent of the type of build. For more about Rocket's
 configuration, see: <https://rocket.rs/v0.5-rc/guide/configuration/>.
+
+## Usage
+
+Podbringer currently has no front-end or web interface yet that can help you
+use it. Until then, you just have to enter the right service-specific RSS feed
+URL in your favorite podcast client to start using it.
+
+The URL is comprised of the following parts:
+
+```
+  https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband
+  |------------------------------|     |-------||--------------|
+   The hosted location URL              Service  User @ service
+```
 
 ## License
 
