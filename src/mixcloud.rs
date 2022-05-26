@@ -152,7 +152,8 @@ pub(crate) async fn get_cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
     result = true
 )]
 pub(crate) async fn redirect_url(download_key: &str) -> Result<String> {
-    let url = format!("{FILES_BASE_URL}{download_key}");
+    let mut url = Url::parse(FILES_BASE_URL).expect("URL can always be parsed");
+    url.set_path(download_key);
 
     println!("🌍 Determining direct URL for {download_key}...");
     let output = YoutubeDl::new(url).run_async().await?;
