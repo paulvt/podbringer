@@ -1598,6 +1598,7 @@ dependencies = [
  "rocket_dyn_templates",
  "rss",
  "thiserror",
+ "url",
  "youtube_dl",
 ]
 

@@ -43,6 +43,9 @@ pub(crate) enum Error {
     #[error("Unknown supported back-end: {0}")]
     UnsupportedBackend(String),
 
+    #[error("URL parse error: {0}")]
+    UrlParse(#[from] url::ParseError),
+
     #[error("Youtube_dl failed: {0}")]
     YoutubeDl(#[from] youtube_dl::Error),
 }

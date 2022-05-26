@@ -11,7 +11,7 @@ use youtube_dl::{YoutubeDl, YoutubeDlOutput};
 
 use super::{Error, Result};
 
-/// A Mixcloud user.
+/// A Mixcloud user (response).
 #[derive(Clone, Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct User {
@@ -36,12 +36,24 @@ pub(crate) struct Pictures {
     pub(crate) large: String,
 }
 
-/// The Mixcloud cloudcasts container.
+/// The Mixcloud cloudcasts response.
 #[derive(Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
-pub(crate) struct CloudcastData {
-    /// The contained cloudcasts.
-    data: Vec<Cloudcast>,
+pub(crate) struct CloudcastsResponse {
+    /// The contained cloudcast items.
+    #[serde(rename = "data")]
+    items: Vec<Cloudcast>,
+
+    /// The paging information.
+    paging: CloudcastsPaging,
+}
+
+/// The Mixcloud paging info.
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub(crate) struct CloudcastsPaging {
+    /// The API URL of the next page.
+    next: Option<String>,
 }
 
 /// A Mixcloud cloudcast.
@@ -96,6 +108,9 @@ const DEFAULT_BITRATE: u32 = 64 * 1024;
 /// The default file (MIME) type used by Mixcloud.
 const DEFAULT_FILE_TYPE: &str = "audio/mpeg";
 
+/// The default page size.
+const DEFAULT_PAGE_SIZE: &str = "50";
+
 /// Returns the default file type used by Mixcloud.
 pub(crate) const fn default_file_type() -> &'static str {
     DEFAULT_FILE_TYPE
@@ -136,12 +151,25 @@ pub(crate) async fn user(username: &str) -> Result<User> {
 pub(crate) async fn cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
     let mut url = Url::parse(API_BASE_URL).expect("URL can always be parsed");
     url.set_path(&format!("{username}/cloudcasts/"));
+    url.query_pairs_mut()
+        .append_pair("limit", DEFAULT_PAGE_SIZE)
+        .append_pair("offset", "0");
 
     println!("⏬ Retrieving cloudcasts of user {username} from {url}...");
-    let response = reqwest::get(url).await?.error_for_status()?;
-    let cloudcasts: CloudcastData = response.json().await?;
+    let mut cloudcasts = Vec::with_capacity(50); // The initial limit
+    loop {
+        let response = reqwest::get(url).await?.error_for_status()?;
+        let cloudcasts_res: CloudcastsResponse = response.json().await?;
+        cloudcasts.extend(cloudcasts_res.items);
 
-    Ok(cloudcasts.data)
+        // Continue onto the next URL in the paging, if there is one.
+        match cloudcasts_res.paging.next {
+            Some(next_url) => url = Url::parse(&next_url)?,
+            None => break,
+        }
+    }
+
+    Ok(cloudcasts)
 }
 
 /// Retrieves the redirect URL for the provided Mixcloud cloudcast key.
