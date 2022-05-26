@@ -90,10 +90,10 @@ const API_BASE_URL: &str = "https://api.mixcloud.com";
 /// The base URL for downloading Mixcloud files.
 const FILES_BASE_URL: &str = "https://www.mixcloud.com";
 
-/// The default bitrate used by
+/// The default bitrate used by Mixcloud.
 const DEFAULT_BITRATE: u32 = 64 * 1024;
 
-/// The default file (MIME) type.
+/// The default file (MIME) type used by Mixcloud.
 const DEFAULT_FILE_TYPE: &str = "audio/mpeg";
 
 /// Returns the default file type used by Mixcloud.
