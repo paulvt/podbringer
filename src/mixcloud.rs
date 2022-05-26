@@ -3,6 +3,7 @@
 //! It uses the Mixcloud API to retrieve the feed (user) and items (cloudcasts)).
 //! See also: <https://www.mixcloud.com/developers/>
 
+use cached::proc_macro::cached;
 use chrono::{DateTime, Utc};
 use reqwest::Url;
 use rocket::serde::Deserialize;
@@ -11,7 +12,7 @@ use youtube_dl::{YoutubeDl, YoutubeDlOutput};
 use super::{Error, Result};
 
 /// A Mixcloud user.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct User {
     /// The name of the user.
@@ -28,7 +29,7 @@ pub(crate) struct User {
 }
 
 /// A collection of different sizes/variants of a picture.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct Pictures {
     /// The large picture of the user.
@@ -44,7 +45,7 @@ pub(crate) struct CloudcastData {
 }
 
 /// A Mixcloud cloudcast.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct Cloudcast {
     /// The key of the cloudcast.
@@ -73,7 +74,7 @@ pub(crate) struct Cloudcast {
 }
 
 /// A Mixcloud cloudcast tag.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct Tag {
     /// The name of the tag.
@@ -108,6 +109,12 @@ pub(crate) fn estimated_file_size(duration: u32) -> u32 {
 }
 
 /// Retrieves the user data using the Mixcloud API.
+#[cached(
+    key = "String",
+    convert = r#"{ username.to_owned() }"#,
+    time = 3600,
+    result = true
+)]
 pub(crate) async fn get_user(username: &str) -> Result<User> {
     let mut url = Url::parse(API_BASE_URL).expect("URL can always be parsed");
     url.set_path(username);
@@ -120,6 +127,12 @@ pub(crate) async fn get_user(username: &str) -> Result<User> {
 }
 
 /// Retrieves the cloudcasts of the user using the Mixcloud API.
+#[cached(
+    key = "String",
+    convert = r#"{ username.to_owned() }"#,
+    time = 3600,
+    result = true
+)]
 pub(crate) async fn get_cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
     let mut url = Url::parse(API_BASE_URL).expect("URL can always be parsed");
     url.set_path(&format!("{username}/cloudcasts/"));
@@ -132,11 +145,17 @@ pub(crate) async fn get_cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
 }
 
 /// Retrieves the redirect URL for the provided Mixcloud cloudcast key.
-pub(crate) async fn redirect_url(key: &str) -> Result<String> {
-    let url = format!("{FILES_BASE_URL}{key}");
+#[cached(
+    key = "String",
+    convert = r#"{ download_key.to_owned() }"#,
+    time = 3600,
+    result = true
+)]
+pub(crate) async fn redirect_url(download_key: &str) -> Result<String> {
+    let url = format!("{FILES_BASE_URL}{download_key}");
 
-    println!("🌍 Determining direct URL for {key}...");
-    let output = YoutubeDl::new(&url).run_async().await?;
+    println!("🌍 Determining direct URL for {download_key}...");
+    let output = YoutubeDl::new(url).run_async().await?;
 
     if let YoutubeDlOutput::SingleVideo(yt_item) = output {
         yt_item.url.ok_or(Error::NoRedirectUrlFound)
