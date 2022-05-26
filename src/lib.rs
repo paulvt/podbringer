@@ -91,8 +91,8 @@ pub(crate) async fn download(file: PathBuf, backend: &str) -> Result<Redirect> {
 /// Handler for retrieving the RSS feed of user on a certain back-end.
 #[get("/feed/<backend>/<username>")]
 async fn feed(backend: &str, username: &str, config: &State<Config>) -> Result<RssFeed> {
-    let user = mixcloud::get_user(username).await?;
-    let cloudcasts = mixcloud::get_cloudcasts(username).await?;
+    let user = mixcloud::user(username).await?;
+    let cloudcasts = mixcloud::cloudcasts(username).await?;
     let mut last_build = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
 
     let category = CategoryBuilder::default()

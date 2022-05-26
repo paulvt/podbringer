@@ -115,7 +115,7 @@ pub(crate) fn estimated_file_size(duration: u32) -> u32 {
     time = 3600,
     result = true
 )]
-pub(crate) async fn get_user(username: &str) -> Result<User> {
+pub(crate) async fn user(username: &str) -> Result<User> {
     let mut url = Url::parse(API_BASE_URL).expect("URL can always be parsed");
     url.set_path(username);
 
@@ -133,7 +133,7 @@ pub(crate) async fn get_user(username: &str) -> Result<User> {
     time = 3600,
     result = true
 )]
-pub(crate) async fn get_cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
+pub(crate) async fn cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
     let mut url = Url::parse(API_BASE_URL).expect("URL can always be parsed");
     url.set_path(&format!("{username}/cloudcasts/"));
 
