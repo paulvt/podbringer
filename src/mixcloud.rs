@@ -147,10 +147,12 @@ pub(crate) async fn redirect_url(key: &str) -> Result<String> {
         let direct_url = String::from_utf8_lossy(&output.stdout)
             .trim_end()
             .to_owned();
+
         if direct_url.is_empty() {
-            return Err(Error::NoRedirectUrlFound);
+            Err(Error::NoRedirectUrlFound)
         } else {
             println!("  Found direct URL: {direct_url}");
+
             Ok(direct_url)
         }
     } else {
