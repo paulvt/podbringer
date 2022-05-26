@@ -10,6 +10,8 @@ use reqwest::Url;
 use rocket::serde::Deserialize;
 use tokio::process::Command;
 
+use super::{Error, Result};
+
 /// A Mixcloud user.
 #[derive(Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -108,52 +110,50 @@ pub(crate) fn estimated_file_size(duration: u32) -> u32 {
 }
 
 /// Retrieves the user data using the Mixcloud API.
-pub(crate) async fn get_user(username: &str) -> Option<User> {
-    let mut url = Url::parse(API_BASE_URL).unwrap();
+pub(crate) async fn get_user(username: &str) -> Result<User> {
+    let mut url = Url::parse(API_BASE_URL).expect("URL can always be parsed");
     url.set_path(username);
 
     println!("⏬ Retrieving user {username} from {url}...");
-    let response = reqwest::get(url).await.ok()?;
-    let user = match response.error_for_status() {
-        Ok(res) => res.json().await.ok()?,
-        Err(_err) => return None,
-    };
+    let response = reqwest::get(url).await?.error_for_status()?;
+    let user = response.json().await?;
 
-    Some(user)
+    Ok(user)
 }
 
 /// Retrieves the cloudcasts of the user using the Mixcloud API.
-pub(crate) async fn get_cloudcasts(username: &str) -> Option<Vec<Cloudcast>> {
-    let mut url = Url::parse(API_BASE_URL).unwrap();
+pub(crate) async fn get_cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
+    let mut url = Url::parse(API_BASE_URL).expect("URL can always be parsed");
     url.set_path(&format!("{username}/cloudcasts/"));
 
     println!("⏬ Retrieving cloudcasts of user {username} from {url}...");
-    let response = reqwest::get(url).await.ok()?;
-    let cloudcasts: CloudcastData = match response.error_for_status() {
-        Ok(res) => res.json().await.ok()?,
-        Err(_err) => return None,
-    };
+    let response = reqwest::get(url).await?.error_for_status()?;
+    let cloudcasts: CloudcastData = response.json().await?;
 
-    Some(cloudcasts.data)
+    Ok(cloudcasts.data)
 }
 
 /// Retrieves the redirect URL for the provided Mixcloud cloudcast key.
-pub(crate) async fn redirect_url(key: &str) -> Option<String> {
+pub(crate) async fn redirect_url(key: &str) -> Result<String> {
     let mut cmd = Command::new("youtube-dl");
     cmd.args(&["--format", "http"])
         .arg("--get-url")
         .arg(&format!("{FILES_BASE_URL}{key}"))
         .stdout(Stdio::piped());
 
-    let output = cmd.output().await.ok()?;
+    println!("🌍 Determining direct URL for {key}...");
+    let output = cmd.output().await?;
     if output.status.success() {
         let direct_url = String::from_utf8_lossy(&output.stdout)
             .trim_end()
             .to_owned();
-        println!("🌍 Determined direct URL for {key}: {direct_url}...");
-
-        Some(direct_url)
+        if direct_url.is_empty() {
+            return Err(Error::NoRedirectUrlFound);
+        } else {
+            println!("  Found direct URL: {direct_url}");
+            Ok(direct_url)
+        }
     } else {
-        None
+        Err(Error::CommandFailed(cmd, output.status))
     }
 }

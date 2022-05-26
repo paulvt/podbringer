@@ -1702,6 +1702,7 @@ dependencies = [
  "rocket_dyn_templates",
  "rss",
  "tempfile",
+ "thiserror",
  "tokio",
 ]
 

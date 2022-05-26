@@ -8,13 +8,15 @@
 #![deny(missing_docs)]
 
 use std::path::PathBuf;
+use std::process::ExitStatus;
 
 use chrono::{DateTime, NaiveDateTime, Utc};
 use rocket::fairing::AdHoc;
 use rocket::http::uri::Absolute;
+use rocket::http::Status;
 use rocket::response::Redirect;
 use rocket::serde::{Deserialize, Serialize};
-use rocket::{get, routes, uri, Build, Responder, Rocket, State};
+use rocket::{get, routes, uri, Build, Request, Responder, Rocket, State};
 use rocket_dyn_templates::{context, Template};
 use rss::extension::itunes::{
     ITunesCategoryBuilder, ITunesChannelExtensionBuilder, ITunesItemExtensionBuilder,
@@ -22,8 +24,42 @@ use rss::extension::itunes::{
 use rss::{
     CategoryBuilder, ChannelBuilder, EnclosureBuilder, GuidBuilder, ImageBuilder, ItemBuilder,
 };
+use tokio::process::Command;
 
 pub(crate) mod mixcloud;
+
+/// The possible errors that can occur.
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum Error {
+    #[error("Command failed: {0:?} exited with {1}")]
+    CommandFailed(Command, ExitStatus),
+
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+
+    #[error("No redirect URL found")]
+    NoRedirectUrlFound,
+
+    #[error("HTTP error: {0}")]
+    Request(#[from] reqwest::Error),
+
+    #[error("Unknown supported back-end: {0}")]
+    UnsupportedBackend(String),
+}
+
+impl<'r, 'o: 'r> rocket::response::Responder<'r, 'o> for Error {
+    fn respond_to(self, _request: &'r Request<'_>) -> rocket::response::Result<'o> {
+        eprintln!("💥 Encountered error: {}", self);
+
+        match self {
+            Error::NoRedirectUrlFound => Err(Status::NotFound),
+            _ => Err(Status::InternalServerError),
+        }
+    }
+}
+
+/// Result type that defaults to [`Error`] as the default error type.
+pub(crate) type Result<T, E = Error> = std::result::Result<T, E>;
 
 /// The extra application specific configuration.
 #[derive(Debug, Deserialize, Serialize)]
@@ -39,22 +75,22 @@ pub(crate) struct Config {
 #[response(content_type = "application/xml")]
 struct RssFeed(String);
 
-/// Retrieves a download using youtube-dl and redirection.
+/// Retrieves a download by redirecting to the URL resolved by the selected back-end.
 #[get("/download/<backend>/<file..>")]
-pub(crate) async fn download(file: PathBuf, backend: &str) -> Option<Redirect> {
+pub(crate) async fn download(file: PathBuf, backend: &str) -> Result<Redirect> {
     match backend {
         "mixcloud" => {
             let key = format!("/{}/", file.with_extension("").to_string_lossy());
 
             mixcloud::redirect_url(&key).await.map(Redirect::to)
         }
-        _ => None,
+        _ => Err(Error::UnsupportedBackend(backend.to_string())),
     }
 }
 
-/// Handler for retrieving the RSS feed of an Mixcloud user.
+/// Handler for retrieving the RSS feed of user on a certain back-end.
 #[get("/feed/<backend>/<username>")]
-async fn feed(backend: &str, username: &str, config: &State<Config>) -> Option<RssFeed> {
+async fn feed(backend: &str, username: &str, config: &State<Config>) -> Result<RssFeed> {
     let user = mixcloud::get_user(username).await?;
     let cloudcasts = mixcloud::get_cloudcasts(username).await?;
     let mut last_build = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
@@ -156,7 +192,7 @@ async fn feed(backend: &str, username: &str, config: &State<Config>) -> Option<R
         .build();
     let feed = RssFeed(channel.to_string());
 
-    Some(feed)
+    Ok(feed)
 }
 
 /// Returns a simple index page that explains the usage.
