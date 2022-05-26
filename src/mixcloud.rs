@@ -3,12 +3,10 @@
 //! It uses the Mixcloud API to retrieve the feed (user) and items (cloudcasts)).
 //! See also: <https://www.mixcloud.com/developers/>
 
-use std::process::Stdio;
-
 use chrono::{DateTime, Utc};
 use reqwest::Url;
 use rocket::serde::Deserialize;
-use tokio::process::Command;
+use youtube_dl::{YoutubeDl, YoutubeDlOutput};
 
 use super::{Error, Result};
 
@@ -135,27 +133,14 @@ pub(crate) async fn get_cloudcasts(username: &str) -> Result<Vec<Cloudcast>> {
 
 /// Retrieves the redirect URL for the provided Mixcloud cloudcast key.
 pub(crate) async fn redirect_url(key: &str) -> Result<String> {
-    let mut cmd = Command::new("youtube-dl");
-    cmd.args(&["--format", "http"])
-        .arg("--get-url")
-        .arg(&format!("{FILES_BASE_URL}{key}"))
-        .stdout(Stdio::piped());
+    let url = format!("{FILES_BASE_URL}{key}");
 
     println!("🌍 Determining direct URL for {key}...");
-    let output = cmd.output().await?;
-    if output.status.success() {
-        let direct_url = String::from_utf8_lossy(&output.stdout)
-            .trim_end()
-            .to_owned();
+    let output = YoutubeDl::new(&url).run_async().await?;
 
-        if direct_url.is_empty() {
-            Err(Error::NoRedirectUrlFound)
-        } else {
-            println!("  Found direct URL: {direct_url}");
-
-            Ok(direct_url)
-        }
+    if let YoutubeDlOutput::SingleVideo(yt_item) = output {
+        yt_item.url.ok_or(Error::NoRedirectUrlFound)
     } else {
-        Err(Error::CommandFailed(cmd, output.status))
+        Err(Error::NoRedirectUrlFound)
     }
 }

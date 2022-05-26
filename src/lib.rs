@@ -10,7 +10,6 @@
 #![deny(missing_docs)]
 
 use std::path::PathBuf;
-use std::process::ExitStatus;
 
 use chrono::{DateTime, NaiveDateTime, Utc};
 use rocket::fairing::AdHoc;
@@ -26,16 +25,12 @@ use rss::extension::itunes::{
 use rss::{
     CategoryBuilder, ChannelBuilder, EnclosureBuilder, GuidBuilder, ImageBuilder, ItemBuilder,
 };
-use tokio::process::Command;
 
 pub(crate) mod mixcloud;
 
 /// The possible errors that can occur.
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum Error {
-    #[error("Command failed: {0:?} exited with {1}")]
-    CommandFailed(Command, ExitStatus),
-
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
 
@@ -47,6 +42,9 @@ pub(crate) enum Error {
 
     #[error("Unknown supported back-end: {0}")]
     UnsupportedBackend(String),
+
+    #[error("Youtube_dl failed: {0}")]
+    YoutubeDl(#[from] youtube_dl::Error),
 }
 
 impl<'r, 'o: 'r> rocket::response::Responder<'r, 'o> for Error {

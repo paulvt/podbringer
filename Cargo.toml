@@ -17,7 +17,7 @@ rocket_dyn_templates = { version = "0.1.0-rc.2", features = ["tera"] }
 rss = "2.0.1"
 tempfile = "3"
 thiserror = "1.0.31"
-tokio = { version = "1.6.1", features = ["process"] }
+youtube_dl = { version = "0.7.0", features = ["tokio"] }
 
 [package.metadata.deb]
 maintainer = "Paul van Tilburg <paul@luon.net>"
