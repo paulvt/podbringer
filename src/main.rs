@@ -9,13 +9,9 @@
 )]
 #![deny(missing_docs)]
 
-use color_eyre::Result;
-
 /// Sets up and launches Rocket.
 #[rocket::main]
-async fn main() -> Result<()> {
-    color_eyre::install()?;
-
+async fn main() -> Result<(), rocket::Error> {
     let rocket = podbringer::setup();
     let _ = rocket.ignite().await?.launch().await?;
 
