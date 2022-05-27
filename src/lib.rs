@@ -43,6 +43,9 @@ pub(crate) enum Error {
     #[error("Unknown supported back-end: {0}")]
     UnsupportedBackend(String),
 
+    #[error("URL parse error: {0}")]
+    UrlParse(#[from] url::ParseError),
+
     #[error("Youtube_dl failed: {0}")]
     YoutubeDl(#[from] youtube_dl::Error),
 }
@@ -89,10 +92,17 @@ pub(crate) async fn download(file: PathBuf, backend: &str) -> Result<Redirect> {
 }
 
 /// Handler for retrieving the RSS feed of user on a certain back-end.
-#[get("/feed/<backend>/<username>")]
-async fn feed(backend: &str, username: &str, config: &State<Config>) -> Result<RssFeed> {
+///
+/// The limit parameter determines the maximum of items that can be in the feed.
+#[get("/feed/<backend>/<username>?<limit>")]
+async fn feed(
+    backend: &str,
+    username: &str,
+    limit: Option<usize>,
+    config: &State<Config>,
+) -> Result<RssFeed> {
     let user = mixcloud::user(username).await?;
-    let cloudcasts = mixcloud::cloudcasts(username).await?;
+    let cloudcasts = mixcloud::cloudcasts(username, limit).await?;
     let mut last_build = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
 
     let category = CategoryBuilder::default()
