@@ -32,5 +32,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial release.
 
 [Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.2.0...HEAD
-[0.2.0]: https://git.luon.net/paul/podbringer/compare/tag/v0.1.0..v0.2.0
+[0.2.0]: https://git.luon.net/paul/podbringer/compare/v0.1.0..v0.2.0
 [0.1.0]: https://git.luon.net/paul/podbringer/commits/tag/v0.1.0
