@@ -97,7 +97,7 @@ const DEFAULT_BITRATE: u32 = 64 * 1024;
 const DEFAULT_FILE_TYPE: &str = "audio/mpeg";
 
 /// Returns the default file type used by Mixcloud.
-pub(crate) fn default_file_type() -> &'static str {
+pub(crate) const fn default_file_type() -> &'static str {
     DEFAULT_FILE_TYPE
 }
 
