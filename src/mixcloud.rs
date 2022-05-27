@@ -217,7 +217,7 @@ fn set_paging_query(url: &mut Url, limit: usize, offset: usize) {
 #[cached(
     key = "String",
     convert = r#"{ download_key.to_owned() }"#,
-    time = 3600,
+    time = 86400,
     result = true
 )]
 pub(crate) async fn redirect_url(download_key: &str) -> Result<String> {
