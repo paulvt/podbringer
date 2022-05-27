@@ -55,6 +55,15 @@ need to use for Podbringer is comprised of the following parts:
    The Podbringer location URL          Service  User @ service
 ```
 
+### Feed item limit
+
+To prevent feeds with a very large number of items, any feed that is returned
+contains at most 50 items by default. If you want to have more (or less) items,
+provide the limit in the URL by setting the `limit` parameter.
+
+For example, to get up until 1000 items the URL becomes:
+`https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband?limit=1000`
+
 ## License
 
 Podbringer is licensed under the MIT license (see the `LICENSE` file or

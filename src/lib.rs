@@ -92,6 +92,8 @@ pub(crate) async fn download(file: PathBuf, backend: &str) -> Result<Redirect> {
 }
 
 /// Handler for retrieving the RSS feed of user on a certain back-end.
+///
+/// The limit parameter determines the maximum of items that can be in the feed.
 #[get("/feed/<backend>/<username>?<limit>")]
 async fn feed(
     backend: &str,
