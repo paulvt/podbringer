@@ -163,20 +163,16 @@ pub(crate) async fn cloudcasts(username: &str, limit: Option<usize>) -> Result<V
         let count = cloudcasts_res.items.len();
         cloudcasts.extend(cloudcasts_res.items);
 
-        // Continue onto the next URL in the paging, if there is one.
+        // Continue onto the next URL in the paging, if there is one and the limit was not reached.
         limit = limit.saturating_sub(count);
         offset += count;
-        match cloudcasts_res.paging.next {
-            Some(next_url) => {
+        match (limit, cloudcasts_res.paging.next) {
+            (0, Some(_)) => break,
+            (_, Some(next_url)) => {
                 url = Url::parse(&next_url)?;
                 set_paging_query(&mut url, limit, offset);
             }
-            None => break,
-        }
-
-        // We have reached the limit.
-        if limit == 0 {
-            break;
+            (_, None) => break,
         }
     }
 
