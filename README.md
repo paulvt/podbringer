@@ -49,7 +49,7 @@ URL in your favorite podcast client to start using it.
 Given the Mixcloud URL <https://www.mixcloud.com/myfavouriteband/>, the URL you
 need to use for Podbringer is comprised of the following parts:
 
-```
+```text
   https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband
   |------------------------------|     |-------||--------------|
    The Podbringer location URL          Service  User @ service
