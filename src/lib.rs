@@ -31,22 +31,28 @@ pub(crate) mod mixcloud;
 /// The possible errors that can occur.
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum Error {
+    /// A standard I/O error occurred.
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
 
+    /// No redirect URL found in item metadata.
     #[error("No redirect URL found")]
     NoRedirectUrlFound,
 
+    /// A (reqwest) HTTP error occurred.
     #[error("HTTP error: {0}")]
     Request(#[from] reqwest::Error),
 
-    #[error("Unknown supported back-end: {0}")]
+    /// Unsupported back-end encountered.
+    #[error("Unsupported back-end: {0}")]
     UnsupportedBackend(String),
 
+    /// A URL parse error occurred.
     #[error("URL parse error: {0}")]
     UrlParse(#[from] url::ParseError),
 
-    #[error("Youtube_dl failed: {0}")]
+    /// An error occurred in youtube-dl.
+    #[error("Youtube-dl failed: {0}")]
     YoutubeDl(#[from] youtube_dl::Error),
 }
 
