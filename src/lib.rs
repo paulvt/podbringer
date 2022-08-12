@@ -188,7 +188,7 @@ async fn feed(
     let itunes_ext = ITunesChannelExtensionBuilder::default()
         .author(Some(user.name.clone()))
         .categories(Vec::from([ITunesCategoryBuilder::default()
-            .text("Music")
+            .text(String::from("Music"))
             .build()])) // FIXME: Don't hardcode the category!
         .image(Some(user.pictures.large))
         .explicit(Some(String::from("no")))
