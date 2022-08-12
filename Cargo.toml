@@ -8,7 +8,7 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-cached = { version = "0.34.0", features = ["async"] }
+cached = { version = "0.38.0", features = ["async"] }
 chrono = { version = "0.4.19", features = ["serde"] }
 reqwest = { version = "0.11.10", features = ["json"] }
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
