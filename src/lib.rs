@@ -26,7 +26,9 @@ use rss::{
     CategoryBuilder, ChannelBuilder, EnclosureBuilder, GuidBuilder, ImageBuilder, ItemBuilder,
 };
 
-pub(crate) mod mixcloud;
+use crate::backends::{mixcloud, Backend};
+
+pub(crate) mod backends;
 
 /// The possible errors that can occur.
 #[derive(Debug, thiserror::Error)]
@@ -88,31 +90,38 @@ struct RssFeed(String);
 #[get("/download/<backend>/<file..>")]
 pub(crate) async fn download(file: PathBuf, backend: &str) -> Result<Redirect> {
     match backend {
-        "mixcloud" => {
-            let key = format!("/{}/", file.with_extension("").to_string_lossy());
-
-            mixcloud::redirect_url(&key).await.map(Redirect::to)
-        }
+        "mixcloud" => mixcloud::backend()
+            .redirect_url(&file)
+            .await
+            .map(Redirect::to),
         _ => Err(Error::UnsupportedBackend(backend.to_string())),
     }
 }
 
-/// Handler for retrieving the RSS feed of user on a certain back-end.
+/// Handler for retrieving the RSS feed of a channel on a certain back-end.
 ///
 /// The limit parameter determines the maximum of items that can be in the feed.
-#[get("/feed/<backend>/<username>?<limit>")]
+#[get("/feed/<backend>/<channel_id>?<limit>")]
 async fn feed(
     backend: &str,
-    username: &str,
+    channel_id: &str,
     limit: Option<usize>,
     config: &State<Config>,
 ) -> Result<RssFeed> {
-    let user = mixcloud::user(username).await?;
-    let cloudcasts = mixcloud::cloudcasts(username, limit).await?;
     let mut last_build = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
+    let channel = match backend {
+        "mixcloud" => mixcloud::backend().channel(channel_id, limit).await?,
+        _ => return Err(Error::UnsupportedBackend(backend.to_string())),
+    };
 
     let category = CategoryBuilder::default()
-        .name(String::from("Music")) // FIXME: Don't hardcode the category!
+        .name(
+            channel
+                .categories
+                .first()
+                .map(Clone::clone)
+                .unwrap_or_default(),
+        )
         .build();
     let generator = String::from(concat!(
         env!("CARGO_PKG_NAME"),
@@ -120,85 +129,78 @@ async fn feed(
         env!("CARGO_PKG_VERSION")
     ));
     let image = ImageBuilder::default()
-        .link(user.pictures.large.clone())
-        .url(user.pictures.large.clone())
+        .link(channel.image.clone())
+        .url(channel.image.clone())
         .build();
-    let items = cloudcasts
+    let items = channel
+        .items
         .into_iter()
-        .map(|cloudcast| {
-            let mut file = PathBuf::from(cloudcast.key.trim_end_matches('/'));
-            file.set_extension("m4a"); // FIXME: Don't hardcode the extension!
-            let url = uri!(
-                Absolute::parse(&config.url).expect("valid URL"),
-                download(backend = backend, file = file)
-            );
-            // FIXME: Don't hardcode the description!
-            let description = format!("Taken from Mixcloud: {}", cloudcast.url);
-            let keywords = cloudcast
-                .tags
-                .iter()
-                .map(|tag| &tag.name)
-                .cloned()
-                .collect::<Vec<_>>()
-                .join(", ");
-            let categories = cloudcast
-                .tags
+        .map(|item| {
+            let categories = item
+                .categories
                 .into_iter()
-                .map(|tag| {
+                .map(|(cat_name, cat_url)| {
                     CategoryBuilder::default()
-                        .name(tag.name)
-                        .domain(Some(tag.url))
+                        .name(cat_name)
+                        .domain(Some(cat_url.to_string()))
                         .build()
                 })
                 .collect::<Vec<_>>();
-
-            let length = mixcloud::estimated_file_size(cloudcast.audio_length);
+            let url = uri!(
+                Absolute::parse(&config.url).expect("valid URL"),
+                download(backend = backend, file = item.enclosure.file)
+            );
             let enclosure = EnclosureBuilder::default()
                 .url(url.to_string())
-                .length(format!("{}", length))
-                .mime_type(String::from(mixcloud::default_file_type()))
+                .length(item.enclosure.length.to_string())
+                .mime_type(item.enclosure.mime_type)
                 .build();
             let guid = GuidBuilder::default()
-                .value(cloudcast.slug)
+                .value(item.guid)
                 .permalink(false)
                 .build();
+            let keywords = item.keywords.join(", ");
             let itunes_ext = ITunesItemExtensionBuilder::default()
-                .image(Some(cloudcast.pictures.large))
-                .duration(Some(format!("{}", cloudcast.audio_length)))
-                .subtitle(Some(description.clone()))
+                .image(Some(item.image.to_string()))
+                .duration(item.duration.map(|dur| format!("{dur}")))
+                .subtitle(item.description.clone())
                 .keywords(Some(keywords))
                 .build();
 
-            if cloudcast.updated_time > last_build {
-                last_build = cloudcast.updated_time;
+            if item.updated_at > last_build {
+                last_build = item.updated_at;
             }
 
             ItemBuilder::default()
-                .title(Some(cloudcast.name))
-                .link(Some(cloudcast.url))
-                .description(Some(description))
+                .title(Some(item.title))
+                .link(Some(item.link.to_string()))
+                .description(item.description)
                 .categories(categories)
                 .enclosure(Some(enclosure))
                 .guid(Some(guid))
-                .pub_date(Some(cloudcast.updated_time.to_rfc2822()))
+                .pub_date(Some(item.updated_at.to_rfc2822()))
                 .itunes_ext(Some(itunes_ext))
                 .build()
         })
         .collect::<Vec<_>>();
     let itunes_ext = ITunesChannelExtensionBuilder::default()
-        .author(Some(user.name.clone()))
-        .categories(Vec::from([ITunesCategoryBuilder::default()
-            .text(String::from("Music"))
-            .build()])) // FIXME: Don't hardcode the category!
-        .image(Some(user.pictures.large))
+        .author(channel.author)
+        .categories(
+            channel
+                .categories
+                .into_iter()
+                .map(|cat| ITunesCategoryBuilder::default().text(cat).build())
+                .collect::<Vec<_>>(),
+        )
+        .image(Some(channel.image.to_string()))
         .explicit(Some(String::from("no")))
-        .summary(Some(user.biog.clone()))
+        .summary(Some(channel.description.clone()))
         .build();
 
     let channel = ChannelBuilder::default()
-        .title(&format!("{} (via Mixcloud)", user.name))
-        .link(&user.url)
-        .description(&user.biog)
+        .title(channel.title)
+        .link(channel.link)
+        .description(channel.description)
         .category(category)
         .last_build_date(Some(last_build.to_rfc2822()))
         .generator(Some(generator))
