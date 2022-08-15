@@ -239,6 +239,8 @@ fn estimated_file_size(duration: u32) -> u64 {
 }
 
 /// Fetches the user from the URL.
+///
+/// If the result is [`Ok`], the user will be cached for 24 hours for the given URL.
 #[cached(
     key = "String",
     convert = r#"{ url.to_string() }"#,
@@ -256,7 +258,7 @@ async fn fetch_user(url: Url) -> Result<User> {
 
 /// Fetches cloudcasts from the URL.
 ///
-/// If the result is [`Ok`], the cloudcasts will be cached for 24 hours for the given username.
+/// If the result is [`Ok`], the cloudcasts will be cached for 24 hours for the given URL.
 #[cached(
     key = "String",
     convert = r#"{ url.to_string() }"#,
@@ -285,6 +287,9 @@ fn set_paging_query(url: &mut Url, limit: usize, offset: usize) {
 }
 
 /// Retrieves the redirect URL for the provided Mixcloud cloudcast key.
+///
+/// If the result is [`Ok`], the redirect URL will be cached for 24 hours for the given cloudcast
+/// key.
 #[cached(
     key = "String",
     convert = r#"{ download_key.to_owned() }"#,
