@@ -45,6 +45,7 @@ pub(crate) trait Backend {
 }
 
 /// The metadata of a collection of content items.
+#[derive(Clone, Debug)]
 pub(crate) struct Channel {
     /// The title of the channel.
     pub(crate) title: String,
@@ -71,6 +72,7 @@ pub(crate) struct Channel {
 }
 
 /// A content item belonging to a channel.
+#[derive(Clone, Debug)]
 pub(crate) struct Item {
     /// The title of the item.
     pub(crate) title: String,
@@ -106,6 +108,7 @@ pub(crate) struct Item {
 }
 
 /// The enclosed media content of an item.
+#[derive(Clone, Debug)]
 pub(crate) struct Enclosure {
     /// The path of the download file associated with the item enclosure.
     ///
