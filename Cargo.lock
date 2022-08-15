@@ -1219,6 +1219,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a60c7ce501c71e03a9c9c0d35b861413ae925bd979cc7a4e30d060069aaac8d"
 
 [[package]]
+name = "mime-db"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d7c816ec30c41f873e1eea969aa2261d78756629e468a427244ff8658b75e7d"
+dependencies = [
+ "reqwest",
+ "serde",
+ "tokio",
+]
+
+[[package]]
 name = "mio"
 version = "0.6.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1627,6 +1638,7 @@ dependencies = [
  "cached",
  "chrono",
  "enum_dispatch",
+ "mime-db",
  "reqwest",
  "rocket",
  "rocket_dyn_templates",

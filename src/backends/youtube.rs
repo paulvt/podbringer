@@ -168,19 +168,25 @@ impl From<YouTubeVideoWithStream> for Item {
         YouTubeVideoWithStream {
             video,
             stream,
-            content_length,
+            content_length: length,
         }: YouTubeVideoWithStream,
     ) -> Self {
         let id = video.id().to_string();
-        let mut link = Url::parse(VIDEO_BASE_URL).expect("valid URL");
-        let description = Some(format!("Taken from YouTube: {0}", link));
-        link.query_pairs_mut().append_pair("v", &id);
+
+        let mime_type = stream.mime_type().to_string();
+        // Ignore everything from MIME type parameter seperator on for extension look-up.
+        let mime_sep = mime_type.find(';').unwrap_or(mime_type.len());
+        let extension = mime_db::extension(&mime_type[..mime_sep]).unwrap_or_default();
+        let file = PathBuf::from(&id).with_extension(extension);
         let enclosure = Enclosure {
-            file: PathBuf::from(&format!("{id}.webm")), // FIXME: Don't hardcode the extension!
-            mime_type: stream.mime_type().to_string(),
-            length: content_length,
+            file,
+            mime_type,
+            length,
         };
 
+        let mut link = Url::parse(VIDEO_BASE_URL).expect("valid URL");
+        link.query_pairs_mut().append_pair("v", &id);
+        let description = Some(format!("Taken from YouTube: {0}", link));
         let duration = Some(video.length().as_secs() as u32);
         let image = video
             .thumbnails()
