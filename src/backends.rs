@@ -15,19 +15,25 @@ use reqwest::Url;
 use crate::{Error, Result};
 
 pub(crate) mod mixcloud;
+pub(crate) mod youtube;
 
 /// Retrieves the back-end for the provided ID (if supported).
 pub(crate) fn get(backend: &str) -> Result<Backends> {
     match backend {
         "mixcloud" => Ok(Backends::Mixcloud(mixcloud::backend())),
+        "youtube" => Ok(Backends::YouTube(youtube::backend())),
         _ => Err(Error::UnsupportedBackend(backend.to_string())),
     }
 }
 
-/// The support back-ends.
+/// The supported back-ends.
 #[enum_dispatch(Backend)]
 pub(crate) enum Backends {
+    /// Mixcloud (<https://www.mixcloud.com>)
     Mixcloud(mixcloud::Backend),
+
+    /// YouTube (<https://www.youtube.com>)
+    YouTube(youtube::Backend),
 }
 
 /// Functionality of a content back-end.
