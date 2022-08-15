@@ -18,7 +18,7 @@ use rocket::serde::{Deserialize, Serialize};
 use rocket::{get, routes, Build, Request, Responder, Rocket, State};
 use rocket_dyn_templates::{context, Template};
 
-use crate::backends::{mixcloud, Backend};
+use crate::backends::Backend;
 
 pub(crate) mod backends;
 pub(crate) mod feed;
@@ -80,32 +80,26 @@ pub(crate) struct Config {
 struct RssFeed(String);
 
 /// Retrieves a download by redirecting to the URL resolved by the selected back-end.
-#[get("/download/<backend>/<file..>")]
-pub(crate) async fn get_download(file: PathBuf, backend: &str) -> Result<Redirect> {
-    match backend {
-        "mixcloud" => mixcloud::backend()
-            .redirect_url(&file)
-            .await
-            .map(Redirect::to),
-        _ => Err(Error::UnsupportedBackend(backend.to_string())),
-    }
+#[get("/download/<backend_id>/<file..>")]
+pub(crate) async fn get_download(file: PathBuf, backend_id: &str) -> Result<Redirect> {
+    let backend = backends::get(backend_id)?;
+
+    backend.redirect_url(&file).await.map(Redirect::to)
 }
 
 /// Handler for retrieving the RSS feed of a channel on a certain back-end.
 ///
 /// The limit parameter determines the maximum of items that can be in the feed.
-#[get("/feed/<backend>/<channel_id>?<limit>")]
+#[get("/feed/<backend_id>/<channel_id>?<limit>")]
 async fn get_feed(
-    backend: &str,
+    backend_id: &str,
     channel_id: &str,
     limit: Option<usize>,
     config: &State<Config>,
 ) -> Result<RssFeed> {
-    let channel = match backend {
-        "mixcloud" => mixcloud::backend().channel(channel_id, limit).await?,
-        _ => return Err(Error::UnsupportedBackend(backend.to_string())),
-    };
-    let feed = feed::construct(backend, config, channel);
+    let backend = backends::get(backend_id)?;
+    let channel = backend.channel(channel_id, limit).await?;
+    let feed = feed::construct(backend_id, config, channel);
 
     Ok(RssFeed(feed.to_string()))
 }

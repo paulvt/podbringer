@@ -18,7 +18,7 @@ use crate::Config;
 /// Constructs a feed as string from a back-end channel using the `rss` crate.
 ///
 /// It requires the backend and configuration to be able to construct download URLs.
-pub(crate) fn construct(backend: &str, config: &Config, channel: Channel) -> rss::Channel {
+pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> rss::Channel {
     let category = CategoryBuilder::default()
         .name(
             channel
@@ -41,7 +41,7 @@ pub(crate) fn construct(backend: &str, config: &Config, channel: Channel) -> rss
     let items = channel
         .items
         .into_iter()
-        .map(|item| construct_item(backend, config, item, &mut last_build))
+        .map(|item| construct_item(backend_id, config, item, &mut last_build))
         .collect::<Vec<_>>();
     let itunes_ext = ITunesChannelExtensionBuilder::default()
         .author(channel.author)
@@ -76,7 +76,7 @@ pub(crate) fn construct(backend: &str, config: &Config, channel: Channel) -> rss
 /// It also bumps the last build timestamp if the last updated timestamp is later than the current
 /// value.
 fn construct_item(
-    backend: &str,
+    backend_id: &str,
     config: &Config,
     item: Item,
     last_build: &mut DateTime<Utc>,
@@ -93,7 +93,7 @@ fn construct_item(
         .collect::<Vec<_>>();
     let url = uri!(
         Absolute::parse(&config.url).expect("valid URL"),
-        crate::get_download(backend = backend, file = item.enclosure.file)
+        crate::get_download(backend_id = backend_id, file = item.enclosure.file)
     );
     let enclosure = EnclosureBuilder::default()
         .url(url.to_string())

@@ -9,14 +9,30 @@ use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
+use enum_dispatch::enum_dispatch;
 use reqwest::Url;
 
-use crate::Result;
+use crate::{Error, Result};
 
 pub(crate) mod mixcloud;
 
+/// Retrieves the back-end for the provided ID (if supported).
+pub(crate) fn get(backend: &str) -> Result<Backends> {
+    match backend {
+        "mixcloud" => Ok(Backends::Mixcloud(mixcloud::backend())),
+        _ => Err(Error::UnsupportedBackend(backend.to_string())),
+    }
+}
+
+/// The support back-ends.
+#[enum_dispatch(Backend)]
+pub(crate) enum Backends {
+    Mixcloud(mixcloud::Backend),
+}
+
 /// Functionality of a content back-end.
 #[async_trait]
+#[enum_dispatch]
 pub(crate) trait Backend {
     /// Returns the name of the backend.
     fn name(&self) -> &'static str;
