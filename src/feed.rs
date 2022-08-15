@@ -34,10 +34,10 @@ pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> 
         " ",
         env!("CARGO_PKG_VERSION")
     ));
-    let image = ImageBuilder::default()
-        .link(channel.image.clone())
-        .url(channel.image.clone())
-        .build();
+    let image = channel
+        .image
+        .clone()
+        .map(|url| ImageBuilder::default().link(url.clone()).url(url).build());
     let items = channel
         .items
         .into_iter()
@@ -52,7 +52,7 @@ pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> 
                 .map(|cat| ITunesCategoryBuilder::default().text(cat).build())
                 .collect::<Vec<_>>(),
         )
-        .image(Some(channel.image.to_string()))
+        .image(channel.image.map(String::from))
         .explicit(Some(String::from("no")))
         .summary(Some(channel.description.clone()))
         .build();
@@ -64,7 +64,7 @@ pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> 
         .category(category)
         .last_build_date(Some(last_build.to_rfc2822()))
         .generator(Some(generator))
-        .image(Some(image))
+        .image(image)
         .items(items)
         .itunes_ext(Some(itunes_ext))
         .build()
@@ -106,7 +106,7 @@ fn construct_item(
         .build();
     let keywords = item.keywords.join(", ");
     let itunes_ext = ITunesItemExtensionBuilder::default()
-        .image(Some(item.image.to_string()))
+        .image(item.image.map(String::from))
         .duration(item.duration.map(|dur| format!("{dur}")))
         .subtitle(item.description.clone())
         .keywords(Some(keywords))

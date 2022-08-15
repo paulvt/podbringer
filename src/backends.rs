@@ -64,7 +64,7 @@ pub(crate) struct Channel {
     pub(crate) categories: Vec<String>,
 
     /// The URL of the image/logo/avatar of a channel.
-    pub(crate) image: Url,
+    pub(crate) image: Option<Url>,
 
     /// The contained content items.
     pub(crate) items: Vec<Item>,
@@ -99,7 +99,7 @@ pub(crate) struct Item {
     pub(crate) keywords: Vec<String>,
 
     /// The URL of the image of the item.
-    pub(crate) image: Url,
+    pub(crate) image: Option<Url>,
 
     /// The timestamp the item was last updated.
     pub(crate) updated_at: DateTime<Utc>,
@@ -117,5 +117,5 @@ pub(crate) struct Enclosure {
     pub(crate) mime_type: String,
 
     /// The length of the enclosed media content (in bytes).
-    pub(crate) length: u32,
+    pub(crate) length: u64,
 }

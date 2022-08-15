@@ -22,7 +22,7 @@ const API_BASE_URL: &str = "https://api.mixcloud.com";
 const FILES_BASE_URL: &str = "https://www.mixcloud.com";
 
 /// The default bitrate used by Mixcloud.
-const DEFAULT_BITRATE: u32 = 64 * 1024;
+const DEFAULT_BITRATE: u64 = 64 * 1024;
 
 /// The default file (MIME) type used by Mixcloud.
 const DEFAULT_FILE_TYPE: &str = "audio/mpeg";
@@ -190,7 +190,7 @@ impl From<UserWithCloudcasts> for Channel {
             description: user.biog,
             author: Some(user.name),
             categories,
-            image: user.pictures.large,
+            image: Some(user.pictures.large),
             items,
         }
     }
@@ -225,7 +225,7 @@ impl From<Cloudcast> for Item {
             duration: Some(cloudcast.audio_length),
             guid: cloudcast.slug,
             keywords,
-            image: cloudcast.pictures.large,
+            image: Some(cloudcast.pictures.large),
             updated_at: cloudcast.updated_time,
         }
     }
@@ -234,8 +234,8 @@ impl From<Cloudcast> for Item {
 /// Returns the estimated file size in bytes for a given duration.
 ///
 /// This uses the default bitrate (see [`DEFAULT_BITRATE`]) which is in B/s.
-fn estimated_file_size(duration: u32) -> u32 {
-    DEFAULT_BITRATE * duration / 8
+fn estimated_file_size(duration: u32) -> u64 {
+    DEFAULT_BITRATE * duration as u64 / 8
 }
 
 /// Fetches the user from the URL.
