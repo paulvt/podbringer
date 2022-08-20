@@ -20,6 +20,9 @@ use crate::{Error, Result};
 /// The base URL for YouTube channels.
 const CHANNEL_BASE_URL: &str = "https://www.youtube.com/channel";
 
+/// The default item limit.
+const DEFAULT_ITEM_LIMIT: usize = 50;
+
 /// The base URL for YouTube playlists.
 const PLAYLIST_BASE_URL: &str = "https://www.youtube.com/channel";
 
@@ -224,24 +227,14 @@ async fn fetch_playlist_videos(
     item_limit: Option<usize>,
 ) -> Result<(YouTubePlaylist, Vec<YouTubeVideoWithStream>)> {
     let id = playlist_id.parse()?;
+    let limit = item_limit.unwrap_or(DEFAULT_ITEM_LIMIT);
     let yt_playlist = client.playlist(id).await?;
-    let yt_videos_w_streams: Vec<_> = match item_limit {
-        Some(n) => {
-            yt_playlist
-                .videos()
-                .filter_map(fetch_stream)
-                .take(n)
-                .collect()
-                .await
-        }
-        None => {
-            yt_playlist
-                .videos()
-                .filter_map(fetch_stream)
-                .collect()
-                .await
-        }
-    };
+    let yt_videos_w_streams = yt_playlist
+        .videos()
+        .filter_map(fetch_stream)
+        .take(limit)
+        .collect()
+        .await;
 
     Ok((yt_playlist, yt_videos_w_streams))
 }
@@ -259,26 +252,15 @@ async fn fetch_channel_videos(
     item_limit: Option<usize>,
 ) -> Result<(YouTubeChannel, Vec<YouTubeVideoWithStream>)> {
     let id = channel_id.parse()?;
+    let limit = item_limit.unwrap_or(DEFAULT_ITEM_LIMIT);
     let yt_channel = client.channel(id).await?;
-    let yt_videos_w_streams: Vec<_> = match item_limit {
-        Some(n) => {
-            yt_channel
-                .uploads()
-                .await?
-                .take(n)
-                .filter_map(fetch_stream)
-                .collect()
-                .await
-        }
-        None => {
-            yt_channel
-                .uploads()
-                .await?
-                .filter_map(fetch_stream)
-                .collect()
-                .await
-        }
-    };
+    let yt_videos_w_streams = yt_channel
+        .uploads()
+        .await?
+        .take(limit)
+        .filter_map(fetch_stream)
+        .collect()
+        .await;
 
     Ok((yt_channel, yt_videos_w_streams))
 }
