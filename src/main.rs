@@ -5,7 +5,12 @@
     missing_debug_implementations,
     rust_2018_idioms,
     rustdoc::broken_intra_doc_links,
-    trivial_numeric_casts
+    trivial_numeric_casts,
+    renamed_and_removed_lints,
+    unsafe_code,
+    unstable_features,
+    unused_import_braces,
+    unused_qualifications
 )]
 #![deny(missing_docs)]
 
