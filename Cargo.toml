@@ -9,7 +9,7 @@ license = "MIT"
 
 [dependencies]
 async-trait = "0.1.57"
-cached = { version = "0.38.0", features = ["async"] }
+cached = { version = "0.39.0", features = ["async"] }
 chrono = { version = "0.4.19", features = ["serde"] }
 enum_dispatch = "0.3.8"
 reqwest = { version = "0.11.10", features = ["json"] }
