@@ -92,7 +92,7 @@ fn construct_item(
         })
         .collect::<Vec<_>>();
     let url = uri!(
-        Absolute::parse(&config.url).expect("valid URL"),
+        Absolute::parse(&config.public_url).expect("valid URL"),
         crate::get_download(backend_id = backend_id, file = item.enclosure.file)
     );
     let enclosure = EnclosureBuilder::default()

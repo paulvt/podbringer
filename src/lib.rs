@@ -69,9 +69,9 @@ pub(crate) type Result<T, E = Error> = std::result::Result<T, E>;
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub(crate) struct Config {
-    /// The URL at which the application is hosted or proxied from.
+    /// The public URL at which the application is hosted or proxied from.
     #[serde(default)]
-    url: String,
+    public_url: String,
 }
 
 /// A Rocket responder wrapper type for RSS feeds.
@@ -107,7 +107,7 @@ async fn get_feed(
 /// Returns a simple index page that explains the usage.
 #[get("/")]
 pub(crate) async fn get_index(config: &State<Config>) -> Template {
-    Template::render("index", context! { url: &config.url })
+    Template::render("index", context! { url: &config.public_url })
 }
 
 /// Sets up Rocket.

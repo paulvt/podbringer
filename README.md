@@ -25,7 +25,7 @@ builds when you don't add `--release`.)
 ### Configuration
 
 For now, you will need to provide Rocket with configuration to tell it at which
-URL Podbringer is hosted. This needs to be done even if you are not using a
+public URL Podbringer is hosted. This needs to be done even if you are not using a
 reverse proxy, in which case you need to provide it with the proxied URL. You
 can also use the configuration to configure a different address and/or port.
 Just create a `Rocket.toml` file that contains (or copy `Rocket.toml.example`):
@@ -34,7 +34,7 @@ Just create a `Rocket.toml` file that contains (or copy `Rocket.toml.example`):
 [default]
 address = "0.0.0.0"
 port = 7062
-url = "https://my.domain.tld/podbringer"
+public_url = "https://my.domain.tld/podbringer"
 ```
 
 This will work independent of the type of build. For more about Rocket's
@@ -52,7 +52,7 @@ need to use for Podbringer is comprised of the following parts:
 ```text
   https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband
   |------------------------------|     |-------||--------------|
-   The Podbringer location URL          Service  User @ service
+   The Podbringer public URL            Service  User @ service
 ```
 
 ### Feed item limit
