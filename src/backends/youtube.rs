@@ -263,8 +263,8 @@ async fn fetch_channel_videos(
     let yt_videos_w_streams = yt_channel
         .uploads()
         .await?
-        .take(limit)
         .filter_map(fetch_stream)
+        .take(limit)
         .collect()
         .await;
 
