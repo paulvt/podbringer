@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
 use cached::proc_macro::cached;
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use reqwest::Url;
 use rocket::futures::StreamExt;
 use ytextract::playlist::video::{Error as YouTubeVideoError, Video as YouTubePlaylistVideo};
@@ -197,6 +197,11 @@ impl From<YouTubeVideoWithStream> for Item {
             .iter()
             .max_by_key(|tn| tn.width * tn.height)
             .map(|tn| tn.url.clone());
+        let timestamp = video
+            .date()
+            .and_hms_opt(12, 0, 0)
+            .expect("Invalid hour, minute and/or second");
+        let updated_at = DateTime::from_utc(timestamp, Utc);
 
         Item {
             title: video.title().to_string(),
@@ -208,7 +213,7 @@ impl From<YouTubeVideoWithStream> for Item {
             guid: id,
             keywords: Default::default(),
             image,
-            updated_at: Utc::now(), // TODO: Get a decent timestamp somewhere?!
+            updated_at,
         }
     }
 }

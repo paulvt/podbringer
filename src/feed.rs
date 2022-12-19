@@ -28,7 +28,9 @@ pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> 
                 .unwrap_or_default(),
         )
         .build();
-    let mut last_build = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc);
+    let unix_timestamp = NaiveDateTime::from_timestamp_opt(0, 0)
+        .expect("Out-of-range seconds or invalid nanoseconds");
+    let mut last_build = DateTime::from_utc(unix_timestamp, Utc);
     let generator = String::from(concat!(
         env!("CARGO_PKG_NAME"),
         " ",
