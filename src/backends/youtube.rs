@@ -9,9 +9,10 @@ use cached::proc_macro::cached;
 use chrono::Utc;
 use reqwest::Url;
 use rocket::futures::StreamExt;
-use ytextract::playlist::video::{Error as YouTubeVideoError, Video as YouTubeVideo};
+use ytextract::playlist::video::{Error as YouTubeVideoError, Video as YouTubePlaylistVideo};
 use ytextract::{
     Channel as YouTubeChannel, Client, Playlist as YouTubePlaylist, Stream as YouTubeStream,
+    Video as YouTubeVideo,
 };
 
 use super::{Channel, Enclosure, Item};
@@ -190,7 +191,7 @@ impl From<YouTubeVideoWithStream> for Item {
         let mut link = Url::parse(VIDEO_BASE_URL).expect("valid URL");
         link.query_pairs_mut().append_pair("v", &id);
         let description = Some(format!("Taken from YouTube: {0}", link));
-        let duration = Some(video.length().as_secs() as u32);
+        let duration = Some(video.duration().as_secs() as u32);
         let image = video
             .thumbnails()
             .iter()
@@ -267,13 +268,14 @@ async fn fetch_channel_videos(
 
 /// Fetches the stream and relevant metadata for a YouTube video result.
 ///
-/// If there is a video retieving the metadata, the video is discarded/ignored.
+/// If there is a error retrieving the metadata, the video is discarded/ignored.
 /// If there are problems retrieving the streams or metadata, the video is also discarded.
 async fn fetch_stream(
-    yt_video: Result<YouTubeVideo, YouTubeVideoError>,
+    yt_video: Result<YouTubePlaylistVideo, YouTubeVideoError>,
 ) -> Option<YouTubeVideoWithStream> {
     match yt_video {
         Ok(video) => {
+            let video = video.upgrade().await.ok()?;
             let stream = video
                 .streams()
                 .await
