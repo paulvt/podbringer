@@ -5,15 +5,21 @@
   URL in your favorite podcast client to start using it.
 </p>
 <p>
-  Given the Mixcloud URL <https://www.mixcloud.com/myfavouriteband/>, the URL you
-  need to use for Podbringer is comprised of the following parts:
+  The URL you need to use for Podbringer is comprised of the following parts:
 
   <pre>
     https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband
-    |------------------------------|     |-------||--------------|
-     The Podbringer public URL            Service  User @ service
+    |------------------------------|      |------| |-------------|
+     The Podbringer public URL            Service   Service ID
   </pre>
 </p>
 <p>
-  The Podbringer location URL of this instance is: {{ url }}
+  Supported services are:
+  <ul>
+    <li>Mixcloud (service ID is Mixcloud username)</li>
+    <li>YouTube (service ID is YouTube channel or playlist ID)</li>
+  </ul>
+</p>
+<p>
+  The Podbringer location URL of this instance is: <a href="{{ url }}">{{ url }}</a>.
 </p>

@@ -26,8 +26,8 @@ builds when you don't add `--release`.)
 ### Configuration
 
 For now, you will need to provide Rocket with configuration to tell it at which
-public URL Podbringer is hosted. This needs to be done even if you are not using a
-reverse proxy, in which case you need to provide it with the proxied URL. You
+public URL Podbringer is hosted. This needs to be done even if you are not using
+a reverse proxy, in which case you need to provide it with the proxied URL. You
 can also use the configuration to configure a different address and/or port.
 Just create a `Rocket.toml` file that contains (or copy `Rocket.toml.example`):
 
@@ -45,16 +45,16 @@ configuration, see: <https://rocket.rs/v0.5-rc/guide/configuration/>.
 
 Podbringer currently has no front-end or web interface yet that can help you
 use it. Until then, you just have to enter the right service-specific RSS feed
-URL in your favorite podcast client to start using it.
-
-Given the Mixcloud URL <https://www.mixcloud.com/myfavouriteband/>, the URL you
-need to use for Podbringer is comprised of the following parts:
+URL in your favorite podcast client to start using it. For example:
 
 ```text
   https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband
-  |------------------------------|     |-------||--------------|
-   The Podbringer public URL            Service  User @ service
+  |------------------------------|      |------| |-------------|
+   The Podbringer public URL            Service   Service ID
 ```
+
+So, the URL consists of the location of Podbringer, the fact that you want the feed,
+the name of the service and the ID that identifies something list on that service.
 
 ### Feed item limit
 
@@ -63,7 +63,43 @@ contains at most 50 items by default. If you want to have more (or less) items,
 provide the limit in the URL by setting the `limit` parameter.
 
 For example, to get up until 1000 items the URL becomes:
-`https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband?limit=1000`
+
+```text
+  https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband?limit=1000`
+```
+
+### Service: Mixcloud
+
+For Mixcloud, a feed can be constructed of everything that a user posted.
+Given the Mixcloud URL like <https://www.mixcloud.com/myfavouriteband/>, the
+`myfavouriteband` part of the URL is the Mixcloud username and can be used as
+the service ID.
+
+```text
+  https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband
+  |------------------------------|      |------| |-------------|
+   The Podbringer public URL            Service   Username
+```
+
+### Service: YouTube
+
+For YouTube, a feed can either be constructed of a channel or a playlist.
+Given the YouTube channel URL like <https://www.youtube.com/c/favouritechannel>,
+the `favouritechannel` part of the URL is the YouTube channel ID.
+Given the YouTube playlist URL
+<https://www.youtube.com/playlist?list=PLsomeplaylistidentifier>, the
+`PLsomeplaylistidentifier` part of the URL is the YouTube playlist ID.
+Either the channel or playlist ID can be used as the service ID.
+
+```text
+  https://my.domain.tld/podbringer/feed/youtube/favouritechannel
+  |------------------------------|      |-----| |--------------|
+   The Podbringer public URL            Service  Channel ID
+
+  https://my.domain.tld/podbringer/feed/youtube/PLsomeplaylistidentifier
+  |------------------------------|      |-----| |----------------------|
+   The Podbringer public URL            Service  Playlist ID
+```
 
 ## License
 
