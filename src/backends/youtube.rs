@@ -115,11 +115,14 @@ impl From<YouTubeChannelWithVideos> for Channel {
         YouTubeChannelWithVideos(yt_channel, yt_videos_w_streams): YouTubeChannelWithVideos,
     ) -> Self {
         let mut link = Url::parse(CHANNEL_BASE_URL).expect("valid URL");
+        let title = format!("{0} (via YouTube)", yt_channel.name());
+        let description = yt_channel.description().to_string();
         link.path_segments_mut()
             .expect("valid URL")
             .push(&yt_channel.id());
         let author = Some(yt_channel.name().to_string());
-        let categories = Vec::from([String::from("Video")]);
+        // FIXME: Don't hardcode the category!
+        let categories = Vec::from([String::from("Channel")]);
         let image = yt_channel
             .avatar()
             .max_by_key(|av| av.width * av.height)
@@ -127,9 +130,9 @@ impl From<YouTubeChannelWithVideos> for Channel {
         let items = yt_videos_w_streams.into_iter().map(Item::from).collect();
 
         Channel {
-            title: format!("{0} (via YouTube)", yt_channel.name()),
+            title,
             link,
-            description: yt_channel.description().to_string(),
+            description,
             author,
             categories,
             image,
@@ -142,12 +145,14 @@ impl From<YouTubePlaylistWithVideos> for Channel {
     fn from(
         YouTubePlaylistWithVideos(yt_playlist, yt_videos_w_streams): YouTubePlaylistWithVideos,
     ) -> Self {
+        let title = format!("{0} (via YouTube)", yt_playlist.title());
         let mut link = Url::parse(PLAYLIST_BASE_URL).expect("valid URL");
+        let description = yt_playlist.description().to_string();
         link.query_pairs_mut()
             .append_pair("list", &yt_playlist.id().to_string());
         let author = yt_playlist.channel().map(|chan| chan.name().to_string());
         // FIXME: Don't hardcode the category!
-        let categories = Vec::from([String::from("Video")]);
+        let categories = Vec::from([String::from("Playlist")]);
         let image = yt_playlist
             .thumbnails()
             .iter()
@@ -156,9 +161,9 @@ impl From<YouTubePlaylistWithVideos> for Channel {
         let items = yt_videos_w_streams.into_iter().map(Item::from).collect();
 
         Channel {
-            title: format!("{0} (via YouTube)", yt_playlist.title()),
+            title,
             link,
-            description: yt_playlist.description().to_string(),
+            description,
             author,
             categories,
             image,
@@ -190,8 +195,23 @@ impl From<YouTubeVideoWithStream> for Item {
 
         let mut link = Url::parse(VIDEO_BASE_URL).expect("valid URL");
         link.query_pairs_mut().append_pair("v", &id);
-        let description = Some(format!("Taken from YouTube: {0}", link));
+        let video_description = video.description();
+        let description = Some(format!("{video_description}\n\nTaken from YouTube: {link}"));
+        let categories = video
+            .hashtags()
+            .filter(|hashtag| !hashtag.trim().is_empty())
+            .map(|hashtag| {
+                let url = Url::parse(&format!(
+                    "https://www.youtube.com/hashtag/{}",
+                    hashtag.trim_start_matches('#')
+                ))
+                .expect("valid URL");
+
+                (hashtag.to_string(), url)
+            })
+            .collect();
         let duration = Some(video.duration().as_secs() as u32);
+        let keywords = video.keywords().clone();
         let image = video
             .thumbnails()
             .iter()
@@ -207,11 +227,11 @@ impl From<YouTubeVideoWithStream> for Item {
             title: video.title().to_string(),
             link,
             description,
-            categories: Default::default(),
+            categories,
             enclosure,
             duration,
             guid: id,
-            keywords: Default::default(),
+            keywords,
             image,
             updated_at,
         }
