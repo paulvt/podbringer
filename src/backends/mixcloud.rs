@@ -199,7 +199,8 @@ impl From<UserWithCloudcasts> for Channel {
 impl From<Cloudcast> for Item {
     fn from(cloudcast: Cloudcast) -> Self {
         let mut file = PathBuf::from(cloudcast.key.trim_end_matches('/'));
-        file.set_extension("m4a"); // FIXME: Don't hardcoded the extension!
+        let extension = mime_db::extension(DEFAULT_FILE_TYPE).expect("MIME type has extension");
+        file.set_extension(extension);
 
         // FIXME: Don't hardcode the description!
         let description = Some(format!("Taken from Mixcloud: {0}", cloudcast.url));

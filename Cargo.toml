@@ -12,6 +12,7 @@ async-trait = "0.1.57"
 cached = { version = "0.39.0", features = ["async"] }
 chrono = { version = "0.4.19", features = ["serde"] }
 enum_dispatch = "0.3.8"
+mime-db = "1.6.0"
 reqwest = { version = "0.11.10", features = ["json"] }
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
 rocket_dyn_templates = { version = "0.1.0-rc.2", features = ["tera"] }
@@ -19,6 +20,7 @@ rss = "2.0.1"
 thiserror = "1.0.31"
 url = { version = "2.2.2", features = ["serde"] }
 youtube_dl = { version = "0.7.0", features = ["tokio"] }
+ytextract = "0.11.1"
 
 [package.metadata.deb]
 maintainer = "Paul van Tilburg <paul@luon.net>"
@@ -29,7 +31,8 @@ Podbringer is a web service that provides podcasts for services that don't
 offer them (anymore). It provides a way to get the RSS feed for your podcast
 client and it facilites the downloads of the pods (enclosures).
 
-It currently only supports [Mixcloud](https://mixcloud.com).
+It currently only supports [Mixcloud](https://www.mixcloud.com) and
+[YouTube](https://www.youtube.com).
 Other back-ends might be added in the future.
 """
 section = "net"
