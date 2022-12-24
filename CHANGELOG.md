@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2022-12-24
+
+### Added
+
+* Add abstraction that will support multiple back-ends
+* Add YouTube back-end for generating feeds of YouTube channels and
+  playlists (#5)
+
+### Changed
+
+* Change the name of the `url` to `public_url` in the configuration file
+  `Rocket.toml`
+* Make feed channel and item images optional
+* Simplify how Rocket is launched
+* Split off feed generation to a separate module
+* Improve documentation
+
+### Fixed
+
+* Some code refactoring
+
+### Security
+
+* Update/bump dependencies
+
 ## [0.2.0] - 2022-05-27
 
 ### Added
@@ -31,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.2.0...HEAD
-[0.2.0]: https://git.luon.net/paul/podbringer/compare/v0.1.0..v0.2.0
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.3.0...HEAD
 [0.1.0]: https://git.luon.net/paul/podbringer/commits/tag/v0.1.0
+[0.2.0]: https://git.luon.net/paul/podbringer/compare/v0.1.0..v0.2.0
+[0.3.0]: https://git.luon.net/paul/podbringer/compare/v0.2.0..v0.3.0
