@@ -65,7 +65,7 @@ provide the limit in the URL by setting the `limit` parameter.
 For example, to get up until 1000 items the URL becomes:
 
 ```text
-  https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband?limit=1000`
+  https://my.domain.tld/podbringer/feed/mixcloud/myfavouriteband?limit=1000
 ```
 
 ### Service: Mixcloud
