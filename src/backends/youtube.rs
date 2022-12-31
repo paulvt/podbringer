@@ -182,10 +182,13 @@ impl From<YouTubeVideoWithStream> for Item {
     ) -> Self {
         let id = video.id().to_string();
 
-        let mime_type = stream.mime_type().to_string();
-        // Ignore everything from MIME type parameter seperator on for extension look-up.
-        let mime_sep = mime_type.find(';').unwrap_or(mime_type.len());
-        let extension = mime_db::extension(&mime_type[..mime_sep]).unwrap_or_default();
+        // Strip parameters from MIME type; some clients are scared of them and they are no
+        // necessary.
+        let mut mime_type = stream.mime_type().to_string();
+        if let Some(sep_idx) = mime_type.find(';') {
+            mime_type.truncate(sep_idx);
+        }
+        let extension = mime_db::extension(&mime_type).unwrap_or_default();
         let file = PathBuf::from(&id).with_extension(extension);
         let enclosure = Enclosure {
             file,
