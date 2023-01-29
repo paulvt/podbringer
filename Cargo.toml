@@ -20,7 +20,7 @@ rss = "2.0.1"
 thiserror = "1.0.31"
 url = { version = "2.2.2", features = ["serde"] }
 youtube_dl = { version = "0.7.0", features = ["tokio"] }
-ytextract = "0.11.1"
+ytextract = "0.11.2"
 
 [package.metadata.deb]
 maintainer = "Paul van Tilburg <paul@luon.net>"
