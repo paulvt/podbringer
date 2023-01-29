@@ -308,7 +308,9 @@ async fn fetch_stream(
                 .streams()
                 .await
                 .ok()?
-                .filter(|v| v.is_audio())
+                // Select the well-supported, almost always available MP4 container format with
+                // only an audio stream and then the one with the highest bitrate.
+                .filter(|v| v.is_audio() && v.mime_type().contains("mp4"))
                 .max_by_key(|v| v.bitrate())?;
             let content_length = stream.content_length().await.ok()?;
 
@@ -337,7 +339,9 @@ async fn retrieve_redirect_url(client: &Client, video_id: &str) -> Result<String
     let stream = video
         .streams()
         .await?
-        .filter(|v| v.is_audio())
+        // Select the well-supported, almost always available MP4 container format with only an
+        // audio stream and then the one with the highest bitrate.
+        .filter(|v| v.is_audio() && v.mime_type().contains("mp4"))
         .max_by_key(|v| v.bitrate())
         .ok_or(Error::NoRedirectUrlFound)?;
 
