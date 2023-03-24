@@ -25,6 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Bump the dependency on `ytextract` (#14)
 * Fix typo in the documentation
 
+### Security
+
+* Update dependencies
+  ([RUSTSEC-2021-0145](https://rustsec.org/advisories/RUSTSEC-2021-0145.html),
+  [RUSTSEC-2020-0016](https://rustsec.org/advisories/RUSTSEC-2020-0016.html),
+  [RUSTSEC-2023-0001](https://rustsec.org/advisories/RUSTSEC-2023-0001.html),
+  [RUSTSEC-2023-0005](https://rustsec.org/advisories/RUSTSEC-2023-0005.html),
+  [RUSTSEC-2023-0018](https://rustsec.org/advisories/RUSTSEC-2023-0018.html),
+  [RUSTSEC-2023-0022](https://rustsec.org/advisories/RUSTSEC-2023-0022.html),
+  [RUSTSEC-2023-0023](https://rustsec.org/advisories/RUSTSEC-2023-0023.html),
+  [RUSTSEC-2023-0024](https://rustsec.org/advisories/RUSTSEC-2023-0024.html))
+
 ## [0.3.0] - 2022-12-24
 
 ### Added
