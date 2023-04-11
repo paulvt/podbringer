@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2023-04-11
+
+### Changed
+
+* Select only direct HTTP MP4 audio streams for the Mixcloud back-end
+
 ## [0.4.0] - 2023-03-24
 
 ### Added
@@ -17,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Update dependencies on `cached` and `youtube_dl`
 * Update to `rocket` version 0.5.0-rc.3
-* Select MP4 audio streams only (experimental)
+* Select only MP4 audio streams for the YouTube back-end (experimental)
 * Remove parameters from MIME types to prevent clients tripping over them
 
 ### Fixed
@@ -86,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.4.0...HEAD
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.4.1...HEAD
+[0.4.1]: https://git.luon.net/paul/podbringer/compare/v0.4.0..v0.4.1
 [0.4.0]: https://git.luon.net/paul/podbringer/compare/v0.3.0..v0.4.0
 [0.3.0]: https://git.luon.net/paul/podbringer/compare/v0.2.0..v0.3.0
 [0.2.0]: https://git.luon.net/paul/podbringer/compare/v0.1.0..v0.2.0
