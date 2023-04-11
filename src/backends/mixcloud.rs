@@ -25,7 +25,7 @@ const FILES_BASE_URL: &str = "https://www.mixcloud.com";
 const DEFAULT_BITRATE: u64 = 64 * 1024;
 
 /// The default file (MIME) type used by Mixcloud.
-const DEFAULT_FILE_TYPE: &str = "audio/mpeg";
+const DEFAULT_FILE_TYPE: &str = "audio/mp4";
 
 /// The default page size.
 const DEFAULT_PAGE_SIZE: usize = 50;
@@ -302,7 +302,9 @@ async fn retrieve_redirect_url(download_key: &str) -> Result<String> {
     url.set_path(download_key);
 
     println!("🌍 Determining direct URL for {download_key}...");
-    let output = YoutubeDl::new(url).run_async().await?;
+    // Select the well-supported, almost always available MP4 container format that is directly
+    // available (so no HLS or DASH). This unfortunately does reduce the bitrate to 64 kbps.
+    let output = YoutubeDl::new(url).format("http").run_async().await?;
 
     if let YoutubeDlOutput::SingleVideo(yt_item) = output {
         yt_item.url.ok_or(Error::NoRedirectUrlFound)
