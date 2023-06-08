@@ -157,7 +157,10 @@ pub(crate) struct Cloudcast {
     /// The tags of the cloudcast.
     pub(crate) tags: Vec<Tag>,
 
-    /// The time the feed was created/started.
+    /// The time the feed was created.
+    pub(crate) created_time: DateTime<Utc>,
+
+    /// The time the feed was updated.
     pub(crate) updated_time: DateTime<Utc>,
 
     /// The original URL of the cloudcast.
@@ -227,6 +230,7 @@ impl From<Cloudcast> for Item {
             guid: cloudcast.slug,
             keywords,
             image: Some(cloudcast.pictures.large),
+            published_at: cloudcast.created_time,
             updated_at: cloudcast.updated_time,
         }
     }

@@ -125,7 +125,7 @@ fn construct_item(
         .categories(categories)
         .enclosure(Some(enclosure))
         .guid(Some(guid))
-        .pub_date(Some(item.updated_at.to_rfc2822()))
+        .pub_date(Some(item.published_at.to_rfc2822()))
         .itunes_ext(Some(itunes_ext))
         .build()
 }

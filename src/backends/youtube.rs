@@ -224,7 +224,9 @@ impl From<YouTubeVideoWithStream> for Item {
             .date()
             .and_hms_opt(12, 0, 0)
             .expect("Invalid hour, minute and/or second");
-        let updated_at = DateTime::from_utc(timestamp, Utc);
+        let published_at = DateTime::from_utc(timestamp, Utc);
+        // There is no updated at timestamp available, really.
+        let updated_at = published_at;
 
         Item {
             title: video.title().to_string(),
@@ -236,6 +238,7 @@ impl From<YouTubeVideoWithStream> for Item {
             guid: id,
             keywords,
             image,
+            published_at,
             updated_at,
         }
     }

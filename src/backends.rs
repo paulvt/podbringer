@@ -109,6 +109,9 @@ pub(crate) struct Item {
     /// The URL of the image of the item.
     pub(crate) image: Option<Url>,
 
+    /// The timestamp the item was published.
+    pub(crate) published_at: DateTime<Utc>,
+
     /// The timestamp the item was last updated.
     pub(crate) updated_at: DateTime<Utc>,
 }
