@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1]
+
+### Changed
+
+* Bump the dependency on `youtube_dl`
+* Update release Gitea Actions workflow; add seperate job to release Debian
+  package to the new repository
+
+### Security
+
+* Update dependencies
+  ([RUSTSEC-2023-0034](https://rustsec.org/advisories/RUSTSEC-2023-0034),
+  [RUSTSEC-2023-0044](https://rustsec.org/advisories/RUSTSEC-2023-0044),
+  [RUSTSEC-2023-0052](https://rustsec.org/advisories/RUSTSEC-2023-0052))
+
 ## [0.5.0] - 2023-06-08
 
 ### Added
@@ -107,6 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Initial release.
 
 [Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.4.1...HEAD
+[0.5.1]: https://git.luon.net/paul/podbringer/compare/v0.5.0..v0.5.1
 [0.5.0]: https://git.luon.net/paul/podbringer/compare/v0.4.1..v0.5.0
 [0.4.1]: https://git.luon.net/paul/podbringer/compare/v0.4.0..v0.4.1
 [0.4.0]: https://git.luon.net/paul/podbringer/compare/v0.3.0..v0.4.0
