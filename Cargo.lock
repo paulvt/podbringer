@@ -2974,12 +2974,11 @@ checksum = "1367295b8f788d371ce2dbc842c7b709c73ee1364d30351dd300ec2203b12377"
 
 [[package]]
 name = "youtube_dl"
-version = "0.8.1"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d6b280dc44a0bc2dd27e296a72ba64b773909f56f7a4bef2e3de0d3ea25bdee"
+checksum = "fc791a982b545c7392ea685957d39bbac4a716667b46d72a1d4c384065205ab9"
 dependencies = [
  "log",
- "reqwest",
  "serde",
  "serde_json",
  "tokio",
