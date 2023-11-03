@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Switch to Rocket 0.5 RC4
 * Update dependency on `cached`
 
-## [0.5.1]
+## [0.5.1] - 2023-08-25
 
 ### Changed
 
