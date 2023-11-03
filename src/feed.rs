@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use chrono::{DateTime, NaiveDateTime, Utc};
+use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use rocket::http::uri::Absolute;
 use rocket::uri;
 use rss::extension::itunes::{
@@ -30,7 +30,7 @@ pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> 
         .build();
     let unix_timestamp = NaiveDateTime::from_timestamp_opt(0, 0)
         .expect("Out-of-range seconds or invalid nanoseconds");
-    let mut last_build = DateTime::from_utc(unix_timestamp, Utc);
+    let mut last_build = Utc.from_utc_datetime(&unix_timestamp);
     let generator = String::from(concat!(
         env!("CARGO_PKG_NAME"),
         " ",

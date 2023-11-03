@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
 use cached::proc_macro::cached;
-use chrono::{DateTime, Utc};
+use chrono::{TimeZone, Utc};
 use reqwest::Url;
 use rocket::futures::StreamExt;
 use ytextract::playlist::video::{Error as YouTubeVideoError, Video as YouTubePlaylistVideo};
@@ -224,7 +224,7 @@ impl From<YouTubeVideoWithStream> for Item {
             .date()
             .and_hms_opt(12, 0, 0)
             .expect("Invalid hour, minute and/or second");
-        let published_at = DateTime::from_utc(timestamp, Utc);
+        let published_at = Utc.from_utc_datetime(&timestamp);
         // There is no updated at timestamp available, really.
         let updated_at = published_at;
 
