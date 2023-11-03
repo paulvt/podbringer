@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.2] - 2023.11-03
+
+### Security
+
+* Update dependencies
+  ([RUSTSEC-2020-0071](https://rustsec.org/advisories/RUSTSEC-2020-0071.html))
+
+### Changed
+
+* Switch to Rocket 0.5 RC4
+* Update dependency on `cached`
+
 ## [0.5.1]
 
 ### Changed
@@ -121,7 +133,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.4.1...HEAD
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.2...HEAD
+[0.5.2]: https://git.luon.net/paul/podbringer/compare/v0.5.1..v0.5.2
 [0.5.1]: https://git.luon.net/paul/podbringer/compare/v0.5.0..v0.5.1
 [0.5.0]: https://git.luon.net/paul/podbringer/compare/v0.4.1..v0.5.0
 [0.4.1]: https://git.luon.net/paul/podbringer/compare/v0.4.0..v0.4.1
