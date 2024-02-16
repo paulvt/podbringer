@@ -66,11 +66,16 @@ impl super::Backend for Backend {
             let count = cloudcasts_res.items.len();
             cloudcasts.extend(cloudcasts_res.items);
 
+            // Check if any paging information is present.
+            let Some(paging) = cloudcasts_res.paging else {
+                break;
+            };
+
             // Continue onto the next URL in the paging, if there is one and the limit was not
             // reached.
             limit = limit.saturating_sub(count);
             offset += count;
-            match (limit, cloudcasts_res.paging.next) {
+            match (limit, paging.next) {
                 (0, Some(_)) => break,
                 (_, Some(next_url)) => {
                     cloudcasts_url = Url::parse(&next_url)?;
@@ -126,8 +131,8 @@ pub(crate) struct CloudcastsResponse {
     #[serde(rename = "data")]
     items: Vec<Cloudcast>,
 
-    /// The paging information.
-    paging: CloudcastsPaging,
+    /// The paging information (if any).
+    paging: Option<CloudcastsPaging>,
 }
 
 /// The Mixcloud paging info.
