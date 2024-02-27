@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.2] - 2023.11-03
+## [0.5.3] - 2024-02-27
+
+### Changed
+
+* Update dependency on `cached`
+
+### Security
+
+* Update dependencies, fixes security advisories:
+  * [RUSTSEC-2024-0003](https://rustsec.org/advisories/RUSTSEC-2024-0003)
+  * [RUSTSEC-2023-0072](https://rustsec.org/advisories/RUSTSEC-2024-0072)
+  * [RUSTSEC-2023-0074](https://rustsec.org/advisories/RUSTSEC-2024-0072)
+
+### Fixed
+
+* Handle paging information begin absent; fixes short feeds for Mixcloud (#17)
+
+## [0.5.2] - 2023-11-03
 
 ### Security
 
@@ -133,7 +150,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.2...HEAD
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.3...HEAD
+[0.5.3]: https://git.luon.net/paul/podbringer/compare/v0.5.1..v0.5.2
 [0.5.2]: https://git.luon.net/paul/podbringer/compare/v0.5.1..v0.5.2
 [0.5.1]: https://git.luon.net/paul/podbringer/compare/v0.5.0..v0.5.1
 [0.5.0]: https://git.luon.net/paul/podbringer/compare/v0.4.1..v0.5.0
