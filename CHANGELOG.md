@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.4] - 2024-07-26
+
+### Changed
+
+* Switch to Forgejo Actions; add audit workflow
+* Update dependency on `rocket_dyn_templates`
+* Update dependency on `youtube_dl`
+
+### Security
+
+* Update dependencies, fixes security advisories:
+  * [RUSTSEC-2024-0019](https://rustsec.org/advisories/RUSTSEC-2024-0019)
+  * [RUSTSEC-2024-0332](https://rustsec.org/advisories/RUSTSEC-2024-0332)
+  * [RUSTSEC-2024-0336](https://rustsec.org/advisories/RUSTSEC-2024-0336)
+  * [RUSTSEC-2024-0357](https://rustsec.org/advisories/RUSTSEC-2024-0357)
+
 ## [0.5.3] - 2024-02-27
 
 ### Changed
@@ -150,8 +166,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.3...HEAD
-[0.5.3]: https://git.luon.net/paul/podbringer/compare/v0.5.1..v0.5.2
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.4...HEAD
+[0.5.4]: https://git.luon.net/paul/podbringer/compare/v0.5.3..v0.5.4
+[0.5.3]: https://git.luon.net/paul/podbringer/compare/v0.5.2..v0.5.3
 [0.5.2]: https://git.luon.net/paul/podbringer/compare/v0.5.1..v0.5.2
 [0.5.1]: https://git.luon.net/paul/podbringer/compare/v0.5.0..v0.5.1
 [0.5.0]: https://git.luon.net/paul/podbringer/compare/v0.4.1..v0.5.0
