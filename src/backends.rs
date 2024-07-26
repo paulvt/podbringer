@@ -41,6 +41,7 @@ pub(crate) enum Backends {
 #[enum_dispatch]
 pub(crate) trait Backend {
     /// Returns the name of the backend.
+    #[allow(unused)] // For future use!
     fn name(&self) -> &'static str;
 
     /// Returns the channel with its currently contained content items.

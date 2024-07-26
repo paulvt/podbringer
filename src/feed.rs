@@ -20,13 +20,7 @@ use crate::Config;
 /// It requires the backend and configuration to be able to construct download URLs.
 pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> rss::Channel {
     let category = CategoryBuilder::default()
-        .name(
-            channel
-                .categories
-                .first()
-                .map(Clone::clone)
-                .unwrap_or_default(),
-        )
+        .name(channel.categories.first().cloned().unwrap_or_default())
         .build();
     let unix_timestamp = NaiveDateTime::from_timestamp_opt(0, 0)
         .expect("Out-of-range seconds or invalid nanoseconds");
