@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
+use chrono::{DateTime, Utc};
 use rocket::http::uri::Absolute;
 use rocket::uri;
 use rss::extension::itunes::{
@@ -22,9 +22,8 @@ pub(crate) fn construct(backend_id: &str, config: &Config, channel: Channel) -> 
     let category = CategoryBuilder::default()
         .name(channel.categories.first().cloned().unwrap_or_default())
         .build();
-    let unix_timestamp = NaiveDateTime::from_timestamp_opt(0, 0)
-        .expect("Out-of-range seconds or invalid nanoseconds");
-    let mut last_build = Utc.from_utc_datetime(&unix_timestamp);
+    let mut last_build =
+        DateTime::from_timestamp(0, 0).expect("Out-of-range seconds or invalid nanoseconds");
     let generator = String::from(concat!(
         env!("CARGO_PKG_NAME"),
         " ",
