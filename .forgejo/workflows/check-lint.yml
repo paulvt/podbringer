@@ -1,4 +1,4 @@
-name: "Check, lint and test"
+name: "Check and lint"
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   check_lint:
-    name: Check, lint and test
+    name: Check and lint
     runs-on: rust-latest
     steps:
       - name: Checkout sources
