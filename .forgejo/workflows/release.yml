@@ -44,11 +44,12 @@ jobs:
           shasum -a 256 dist/${BIN_NAME} > dist/${BIN_NAME}.sha256sum
 
       - name: Release to Forgejo
-        uses: actions/forgejo-release@v1
+        uses: paul/forgejo-release@main
         with:
-          # This is available by default.
-          api_key: '${{ secrets.RELEASE_TOKEN }}'
+          direction: upload
+          release-dir: dist
           release-notes: '${{ env.RELEASE_NOTES }}'
+          title: 'Release ${{ env.VERSION }}'
           token: '${{ secrets.RELEASE_TOKEN }}'
 
   release-crate:
