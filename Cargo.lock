@@ -1299,9 +1299,9 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
 name = "mime-db"
-version = "1.7.0"
+version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c7a61c4bc8a32ee5bf3e11804ec460e771ea496968a213fa187651569ee3418"
+checksum = "31951f6dfc6394b0dc7bf1dad6be4fc0819253ef17ffba37895b5c1dd4978d60"
 dependencies = [
  "reqwest",
  "serde",
