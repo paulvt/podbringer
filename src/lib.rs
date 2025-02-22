@@ -55,23 +55,23 @@ pub(crate) enum Error {
     #[error("Youtube-dl failed: {0}")]
     YoutubeDl(#[from] youtube_dl::Error),
 
-    /// An YouTube extract error occured.
+    /// An YouTube extract error occurred.
     #[error("YouTube extract error: {0}")]
     YtExtract(#[from] ytextract::Error),
 
-    /// An YouTube extract ID parsing error occured.
+    /// An YouTube extract ID parsing error occurred.
     #[error("YouTube extract ID parsing error: {0}")]
     YtExtractId0(#[from] ytextract::error::Id<0>),
 
-    /// An YouTube extract ID parsing error occured.
+    /// An YouTube extract ID parsing error occurred.
     #[error("YouTube extract ID parsing error: {0}")]
     YtExtractId11(#[from] ytextract::error::Id<11>),
 
-    /// An YouTube extract ID parsing error occured.
+    /// An YouTube extract ID parsing error occurred.
     #[error("YouTube extract ID parsing error: {0}")]
     YtExtractId24(#[from] ytextract::error::Id<24>),
 
-    /// An YouTube extract playlist video error occured.
+    /// An YouTube extract playlist video error occurred.
     #[error("YouTube extract playlist video error: {0}")]
     YtExtractPlaylistVideo(#[from] ytextract::playlist::video::Error),
 }

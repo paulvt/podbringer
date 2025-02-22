@@ -2,7 +2,7 @@
 
 Podbringer is a web service that provides podcasts for services that don't
 offer them (anymore). It provides a way to get the RSS feed for your podcast
-client and it facilites the downloads of the pods (enclosures).
+client and it facilities the downloads of the pods (enclosures).
 
 It currently only supports [Mixcloud](https://www.mixcloud.com) and
 [YouTube](https://www.youtube.com).

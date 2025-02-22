@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Bump the dependency on `youtube_dl`
-* Update release Gitea Actions workflow; add seperate job to release Debian
+* Update release Gitea Actions workflow; add separate job to release Debian
   package to the new repository
 
 ### Security
