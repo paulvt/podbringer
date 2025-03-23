@@ -1,6 +1,6 @@
 [package]
 name = "podbringer"
-version = "0.5.4"
+version = "0.5.5"
 authors = ["Paul van Tilburg <paul@luon.net>"]
 edition = "2021"
 description = "Web service that provides podcasts for services that don't offer them (anymore)"
