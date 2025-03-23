@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.5] - 2025-03-23
+
+### Added
+
+* Add Renovate config with recommended settings
+
+### Changed
+
+* Update the dependencies on `cached`, `reqwest` and `thiserror`
+
+### Fixed
+
+* Fix typos in documentation and comments
+
+### Security
+
+* Updated dependencies, fixes security advisories:
+  * [RUSTSEC-2025-0004](https://rustsec.org/advisories/RUSTSEC-2025-0004)
+  * [RUSTSEC-2025-0009](https://rustsec.org/advisories/RUSTSEC-2025-0009)
+
 ## [0.5.4] - 2024-07-26
 
 ### Changed
@@ -166,7 +186,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.4...HEAD
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.5...HEAD
+[0.5.5]: https://git.luon.net/paul/podbringer/compare/v0.5.4..v0.5.5
 [0.5.4]: https://git.luon.net/paul/podbringer/compare/v0.5.3..v0.5.4
 [0.5.3]: https://git.luon.net/paul/podbringer/compare/v0.5.2..v0.5.3
 [0.5.2]: https://git.luon.net/paul/podbringer/compare/v0.5.1..v0.5.2
