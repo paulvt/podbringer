@@ -293,7 +293,7 @@ fn set_paging_query(url: &mut Url, limit: usize, offset: usize) {
             "limit",
             &format!("{}", std::cmp::min(limit, DEFAULT_PAGE_SIZE)),
         )
-        .append_pair("offset", &format!("{}", offset));
+        .append_pair("offset", &format!("{offset}"));
 }
 
 /// Retrieves the redirect URL for the provided Mixcloud cloudcast key.

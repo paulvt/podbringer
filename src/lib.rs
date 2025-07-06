@@ -78,7 +78,7 @@ pub(crate) enum Error {
 
 impl<'r, 'o: 'r> rocket::response::Responder<'r, 'o> for Error {
     fn respond_to(self, _request: &'r Request<'_>) -> rocket::response::Result<'o> {
-        eprintln!("💥 Encountered error: {}", self);
+        eprintln!("💥 Encountered error: {self}");
 
         match self {
             Error::NoRedirectUrlFound => Err(Status::NotFound),
