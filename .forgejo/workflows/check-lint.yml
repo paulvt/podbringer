@@ -1,4 +1,5 @@
 name: "Check and lint"
+enable-email-notifications: true
 
 on:
   pull_request:
