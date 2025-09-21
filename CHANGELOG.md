@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.6] - 2025-09-21
+
+### Changed
+
+* Enable email notifications for all Forgejo Action workflows
+
+### Security
+
+* Updated dependencies; fixes security advisories:
+  * [RUSTSEC-2025-0022](https://rustsec.org/advisories/RUSTSEC-2025-0022.html)
+  * [RUSTSEC-2025-0024](https://rustsec.org/advisories/RUSTSEC-2025-0024.html)
+  * [RUSTSEC-2025-0047](https://rustsec.org/advisories/RUSTSEC-2025-0047.html)
+  * [RUSTSEC-2025-0055](https://rustsec.org/advisories/RUSTSEC-2025-0055.html)
+
 ## [0.5.5] - 2025-03-23
 
 ### Added
@@ -186,7 +200,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.5...HEAD
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.6...HEAD
+[0.5.6]: https://git.luon.net/paul/podbringer/compare/v0.5.5..v0.5.6
 [0.5.5]: https://git.luon.net/paul/podbringer/compare/v0.5.4..v0.5.5
 [0.5.4]: https://git.luon.net/paul/podbringer/compare/v0.5.3..v0.5.4
 [0.5.3]: https://git.luon.net/paul/podbringer/compare/v0.5.2..v0.5.3
