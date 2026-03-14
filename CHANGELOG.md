@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-03-14
+
+### Changed
+
+* Update the dependency on `cached`
+
+### Security
+
+* Updated dependencies; fixes security advisories:
+  * [RUSTSEC-2025-0074](https://rustsec.org/advisories/RUSTSEC-2025-0072.html)
+  * [RUSTSEC-2025-0075](https://rustsec.org/advisories/RUSTSEC-2025-0075.html)
+  * [RUSTSEC-2025-0080](https://rustsec.org/advisories/RUSTSEC-2025-0080.html)
+  * [RUSTSEC-2025-0081](https://rustsec.org/advisories/RUSTSEC-2025-0081.html)
+  * [RUSTSEC-2025-0098](https://rustsec.org/advisories/RUSTSEC-2025-0098.html)
+  * [RUSTSEC-2025-0104](https://rustsec.org/advisories/RUSTSEC-2025-0104.html)
+  * [RUSTSEC-2026-0009](https://rustsec.org/advisories/RUSTSEC-2026-0009.html)
+  * [RUSTSEC-2026-0037](https://rustsec.org/advisories/RUSTSEC-2026-0037.html)
+
 ## [0.5.6] - 2025-09-21
 
 ### Changed
@@ -200,7 +218,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
-[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.6...HEAD
+[Unreleased]: https://git.luon.net/paul/podbringer/compare/v0.5.7...HEAD
+[0.5.7]: https://git.luon.net/paul/podbringer/compare/v0.5.6..v0.5.7
 [0.5.6]: https://git.luon.net/paul/podbringer/compare/v0.5.5..v0.5.6
 [0.5.5]: https://git.luon.net/paul/podbringer/compare/v0.5.4..v0.5.5
 [0.5.4]: https://git.luon.net/paul/podbringer/compare/v0.5.3..v0.5.4
