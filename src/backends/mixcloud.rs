@@ -4,7 +4,6 @@
 //! See also: <https://www.mixcloud.com/developers/>
 
 use std::path::{Path, PathBuf};
-use std::time::Duration;
 
 use async_trait::async_trait;
 use cached::proc_macro::cached;

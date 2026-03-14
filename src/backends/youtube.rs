@@ -3,7 +3,6 @@
 //! It uses the `ytextract` crate to retrieve the feed (channel or playlist) and items (videos).
 
 use std::path::{Path, PathBuf};
-use std::time::Duration;
 
 use async_trait::async_trait;
 use cached::proc_macro::cached;
