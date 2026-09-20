@@ -250,7 +250,7 @@ impl From<YouTubeVideoWithStream> for Item {
 #[cached(
     key = "(String, Option<usize>)",
     convert = r#"{ (playlist_id.to_owned(), item_limit) }"#,
-    ttl = 86400
+    ttl_secs = 86400
 )]
 async fn fetch_playlist_videos(
     client: &Client,
@@ -274,7 +274,7 @@ async fn fetch_playlist_videos(
 #[cached(
     key = "(String, Option<usize>)",
     convert = r#"{ (channel_id.to_owned(), item_limit) }"#,
-    ttl = 86400
+    ttl_secs = 86400
 )]
 async fn fetch_channel_videos(
     client: &Client,
@@ -328,7 +328,11 @@ async fn fetch_stream(
 /// Retrieves the redirect URL for the provided YouTube video ID.
 ///
 /// If the result is [`Ok`], the redirect URL will be cached for 24 hours for the given video ID.
-#[cached(key = "String", convert = r#"{ video_id.to_owned() }"#, ttl = 86400)]
+#[cached(
+    key = "String",
+    convert = r#"{ video_id.to_owned() }"#,
+    ttl_secs = 86400
+)]
 async fn retrieve_redirect_url(client: &Client, video_id: &str) -> Result<String> {
     let video_id = video_id.parse()?;
     let video = client.video(video_id).await?;

@@ -251,7 +251,7 @@ fn estimated_file_size(duration: u32) -> u64 {
 /// Fetches the user from the URL.
 ///
 /// If the result is [`Ok`], the user will be cached for 24 hours for the given URL.
-#[cached(key = "String", convert = r#"{ url.to_string() }"#, ttl = 86400)]
+#[cached(key = "String", convert = r#"{ url.to_string() }"#, ttl_secs = 86400)]
 ///
 /// If the result is [`Ok`], the user will be cached for 24 hours for the given username.
 async fn fetch_user(url: Url) -> Result<User> {
@@ -264,7 +264,7 @@ async fn fetch_user(url: Url) -> Result<User> {
 /// Fetches cloudcasts from the URL.
 ///
 /// If the result is [`Ok`], the cloudcasts will be cached for 24 hours for the given URL.
-#[cached(key = "String", convert = r#"{ url.to_string() }"#, ttl = 86400)]
+#[cached(key = "String", convert = r#"{ url.to_string() }"#, ttl_secs = 86400)]
 async fn fetch_cloudcasts(url: Url) -> Result<CloudcastsResponse> {
     let response = reqwest::get(url).await?.error_for_status()?;
     let cloudcasts_res = response.json().await?;
@@ -293,7 +293,7 @@ fn set_paging_query(url: &mut Url, limit: usize, offset: usize) {
 #[cached(
     key = "String",
     convert = r#"{ download_key.to_owned() }"#,
-    ttl = 86400
+    ttl_secs = 86400
 )]
 async fn retrieve_redirect_url(download_key: &str) -> Result<String> {
     let mut url = Url::parse(FILES_BASE_URL).expect("URL can always be parsed");
